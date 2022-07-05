@@ -70,7 +70,9 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 			}
 		}
 	}
-	
+
+	// TODO: Add on click without drag event, focus in center of the figure to write something
+	//		 Add on double click inside circle draw or erase final state.
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		int x = (int) event.getX();
