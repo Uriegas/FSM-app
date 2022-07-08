@@ -35,7 +35,7 @@ public class State extends Figure {
     public void draw(Canvas canvas) {
         canvas.drawCircle(this.x, this.y, this.r, paint);
         canvas.drawCircle(this.x, this.y, this.r-this.r*this.ratio_percentage, paint);
-        canvas.drawText("q_1", this.x, this.y, paint);
+        canvas.drawText("S_"+this.id, this.x, this.y, paint);
     }
 
     /**
@@ -68,9 +68,9 @@ public class State extends Figure {
      * @param canvas
      * @return
      */
-    public void setFinal(Canvas canvas) {
+    public void setFinal() {
         this.isFinal = !this.isFinal;
-        canvas.drawCircle(this.x, this.y, this.r-this.r*this.ratio_percentage, paint);
+//        canvas.drawCircle(this.x, this.y, this.r-this.r*this.ratio_percentage, paint);
     }
 
     /**
@@ -78,8 +78,8 @@ public class State extends Figure {
      * @param canvas
      * @param name
      */
-    public void setName(Canvas canvas, String name) {
+    public void setName(String name) {
         this.name = name;
-        canvas.drawText(name, this.x, this.y, this.paint);
+//        canvas.drawText(name, this.x, this.y, this.paint);
     }
 }

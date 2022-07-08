@@ -150,7 +150,15 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	@Override
 	public boolean onDoubleTap(MotionEvent motionEvent) {
 		Log.d(TAG, "On double tap: called");
-		figures.add(new State(id++, (int)motionEvent.getX(), (int)motionEvent.getY()));
+		int x = (int) motionEvent.getX(); int y = (int) motionEvent.getY();
+		for(Figure figure : figures)
+			if(currentFigure == -1 && figure instanceof State)
+				currentFigure = ((State) figure).onDown(x, y);
+
+		 if(currentFigure != -1 && figures.get(currentFigure) instanceof State)
+			 ((State)figures.get(currentFigure)).setFinal();
+		 else
+			figures.add(new State(id++, x, y));
 		return false;
 	}
 
