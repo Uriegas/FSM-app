@@ -7,23 +7,31 @@ package com.upv.pm_2022.iti_27849_u2_equipo_04;
 
 import java.util.ArrayList;
 import android.content.Context;
+import android.gesture.GestureOverlayView;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
-public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callback {
+public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callback,
+		GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
 	private DragAndDropThread thread;
 	private ArrayList<Figure> figures;
-	private int figuraActiva;
+	private int currentFigure;
 	int id = 0;
+	private GestureDetector gestureDetector;
+	private static final String TAG = "FSM_canvas";
 	
 	public DragAndDropView(Context context) {
 		super(context);
 		getHolder().addCallback(this);
+		gestureDetector = new GestureDetector(context, this);
 	}
 
 	@Override
@@ -36,7 +44,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		figures = new ArrayList<Figure>();
 		figures.add(new State(id++,400,500));
 		figures.add(new State(id++,800,500));
-		figuraActiva = -1;
+		currentFigure = -1;
 		
 		thread = new DragAndDropThread(getHolder(), this);
 		thread.setRunning(true);
@@ -52,7 +60,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 				thread.join();
 				retry = false;
 			} catch (InterruptedException e) {
-				
+				e.printStackTrace();
 			}
 		}
 	}
@@ -75,35 +83,80 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	//		 Add on double click inside circle draw or erase final state.
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		int x = (int) event.getX();
-		int y = (int) event.getY();
-		
+		gestureDetector.onTouchEvent(event);
+		int x = (int) event.getX(); int y = (int) event.getY();
 		switch(event.getAction()) {
-
 			case MotionEvent.ACTION_DOWN:
 				for(Figure figure : figures) {
-					if(figuraActiva == -1) {
-						if (figure instanceof State) {
-							figuraActiva = ((State) figure).onDown(x, y);
-						}
-						System.out.println("figuraActiva: " + figuraActiva);
-					}
+					if(currentFigure == -1 && figure instanceof State)
+							currentFigure = ((State) figure).onDown(x, y);
+//						System.out.println("currentFigure: " + currentFigure);
 				}
 				break;
-
 			case MotionEvent.ACTION_MOVE:
-				if(figuraActiva != -1) {
-					if(figures.get(figuraActiva) instanceof State) {
-						figures.get(figuraActiva).onMove(x, y);
+				if(currentFigure != -1) {
+					if(figures.get(currentFigure) instanceof State) {
+						figures.get(currentFigure).onMove(x, y);
 					}
 				}
 				break;
-
 			case MotionEvent.ACTION_UP:
-				figuraActiva = -1;
+				currentFigure = -1;
 				break;
 		}
-
 		return true;
+	}
+
+	@Override
+	public boolean onDown(MotionEvent motionEvent) {
+		Log.d(TAG, "On down: called");
+		return false;
+	}
+
+	@Override
+	public void onShowPress(MotionEvent motionEvent) {
+		Log.d(TAG, "On show press: called");
+	}
+
+	@Override
+	public boolean onSingleTapUp(MotionEvent motionEvent) {
+		Log.d(TAG, "On single tap up press: called");
+		return false;
+	}
+
+	@Override
+	public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+		Log.d(TAG, "On scroll: called");
+		return false;
+	}
+
+	@Override
+	public void onLongPress(MotionEvent motionEvent) {
+		Log.d(TAG, "On long press: called");
+	}
+
+	@Override
+	public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+		Log.d(TAG, "On fling: called");
+		return false;
+	}
+
+	@Override
+	public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
+		Log.d(TAG, "On single tap confirmed: called");
+		return false;
+	}
+
+	@Override
+	public boolean onDoubleTap(MotionEvent motionEvent) {
+		Log.d(TAG, "On double tap: called");
+		figures.add(new State(id++, (int)motionEvent.getX(), (int)motionEvent.getY()));
+		return false;
+	}
+
+	@Override
+	public boolean onDoubleTapEvent(MotionEvent motionEvent) {
+		Log.d(TAG, "On double tap event: called");
+		return false;
 	}
 }

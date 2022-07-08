@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,10 +30,13 @@ public class MainActivity extends AppCompatActivity {
                                          " sep=0pt]";
     private static String END_REGION   = "\\end{tikzpicture}\n\\end{center}\n\n\\end{document}\n";
 
+    Button btn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         adjacency_list = new HashMap<>();
+
 //        canvas = new Canvas(bitmap);
         // want fullscreen, we hide Activity's title and notification bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);

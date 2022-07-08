@@ -24,6 +24,8 @@ public class State extends Figure {
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(2.5f);
+        paint.setTextSize(32);
+        paint.setTextAlign(Paint.Align.CENTER);
     }
 
     public State(int id, int x, int y, int r, String name) { this(id, x, y, r, name, false); }
@@ -33,6 +35,7 @@ public class State extends Figure {
     public void draw(Canvas canvas) {
         canvas.drawCircle(this.x, this.y, this.r, paint);
         canvas.drawCircle(this.x, this.y, this.r-this.r*this.ratio_percentage, paint);
+        canvas.drawText("q_1", this.x, this.y, paint);
     }
 
     /**
@@ -45,8 +48,9 @@ public class State extends Figure {
         // Pythagorean theorem in circle: x^2 + y^2 = r^2, if touched is (x_1, y_1) then
         // the square of the distance from the center to the touched point should be less than r^2:
         // (x-x_1)^2 + (y-y_1)^2 < r^2
-        if (((x-touchX) * (x-touchX)) + ((y-touchY) * (y-touchY)) < (r*r))
+        if (((x-touchX) * (x-touchX)) + ((y-touchY) * (y-touchY)) < (r*r)) {
             return this.id;
+        }
         return -1;
     }
 
