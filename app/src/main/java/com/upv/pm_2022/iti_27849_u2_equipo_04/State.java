@@ -26,6 +26,12 @@ public class State extends Figure {
         paint.setStrokeWidth(2.5f);
         paint.setTextSize(32);
         paint.setTextAlign(Paint.Align.CENTER);
+        // TODO: Change letter size, tyoe and vertically align text.
+//        Typeface typeface = new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+//        FormattedText formattedText = new FormattedText("Text to render", CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeFace, 16, Brushes.Black);
+//
+//        Point textLocation = new Point(centerPoint.X - formattedText.WidthIncludingTrailingWhitespace / 2, center.Y - formattedText.Height);
+//        drawingContext.DrawText(formattedText, textLocation);
     }
 
     public State(int id, int x, int y, int r, String name) { this(id, x, y, r, name, false); }
@@ -34,7 +40,8 @@ public class State extends Figure {
 
     public void draw(Canvas canvas) {
         canvas.drawCircle(this.x, this.y, this.r, paint);
-        canvas.drawCircle(this.x, this.y, this.r-this.r*this.ratio_percentage, paint);
+        if(isFinal)
+            canvas.drawCircle(this.x, this.y, this.r-this.r*this.ratio_percentage, paint);
         canvas.drawText("S_"+this.id, this.x, this.y, paint);
     }
 
@@ -59,27 +66,17 @@ public class State extends Figure {
      * @param touchX
      * @param touchY
      */
-    public void onMove(int touchX, int touchY) {
-        this.x = touchX; this.y = touchY;
-    }
+    public void onMove(int touchX, int touchY) { this.x = touchX; this.y = touchY; }
 
     /**
      * Set the state of
-     * @param canvas
      * @return
      */
-    public void setFinal() {
-        this.isFinal = !this.isFinal;
-//        canvas.drawCircle(this.x, this.y, this.r-this.r*this.ratio_percentage, paint);
-    }
+    public void setFinal() { this.isFinal = !this.isFinal; }
 
     /**
      * Set the name of the state
-     * @param canvas
      * @param name
      */
-    public void setName(String name) {
-        this.name = name;
-//        canvas.drawText(name, this.x, this.y, this.paint);
-    }
+    public void setName(String name) { this.name = name; }
 }
