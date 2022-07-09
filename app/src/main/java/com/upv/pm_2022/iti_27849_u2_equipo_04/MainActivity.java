@@ -1,62 +1,85 @@
 package com.upv.pm_2022.iti_27849_u2_equipo_04;
 
 import androidx.appcompat.app.AppCompatActivity;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
+
 import android.os.Bundle;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-/**
- * Features:
- * On double click in canvas;           create a new state and focus on its name, highlight in blue.
- * On double click inside a state;      change state type.
- * On single click inside a state;      change state name,                        highlight in blue.
- * On pressed click and drag;           Create arrow to another state,            highlight in blue.
- */
 public class MainActivity extends AppCompatActivity {
-    private Bitmap bitmap;
-    private Canvas canvas;
-    private HashMap<Figure, List<Figure>> adjacency_list;
-    private static String START_REGION = "\\documentclass[12pt]{article}\n\\usepackage{tikz}\n" +
-                                         "\n\\begin{document}\n\n\\begin{center}\n\\begin{tikz" +
-                                         "picture}[scale=0.2]\n\\tikzstyle{every node}+=[inner" +
-                                         " sep=0pt]";
-    private static String END_REGION   = "\\end{tikzpicture}\n\\end{center}\n\n\\end{document}\n";
 
-    Button btn;
+    Button btnFlecha, btnEliminar;
+    Spinner spnrExportar;
+    //DragAndDropView canvas;
+    MySurfaceView canvas;
+
+    ArrayList<String> opciones = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        adjacency_list = new HashMap<>();
+        setContentView(R.layout.activity_main);
 
-//        canvas = new Canvas(bitmap);
-        // want fullscreen, we hide Activity's title and notification bar
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                             WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        btnFlecha = findViewById(R.id.btnFlecha);
+        btnEliminar = findViewById(R.id.btnEliminar);
+        spnrExportar = findViewById(R.id.opExportar);
+        canvas = findViewById(R.id.canvas);
 
-        setContentView(new DragAndDropView(this));
-    }
-    /**
-     * Get the latex representation of the graph
-     * @param adjacency_list a list representation nodes and their connections
-     */
-    private static String toLatex(HashMap<Figure, List<Figure>> adjacency_list) {
-        String latex_output = START_REGION;
-        for(Map.Entry<Figure, List<Figure>> entry : adjacency_list.entrySet()) {
-            Figure node = entry.getKey();
-            List<Figure> adjacency = entry.getValue();
+        opciones.add("Exportar como PNG");
+        opciones.add("Exportar como PDF");
 
-            latex_output += "\n";
-        }
-        return latex_output + END_REGION;
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, opciones);
+
+        spnrExportar.setAdapter(adapter);
+
+        spnrExportar.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                switch (position){
+
+                    case 0:{
+                        //Aquí es para quien le tocó lo de exportar como PNG, mandas llamar tus métodos
+
+                        break;
+                    }
+
+                    case 1:{
+                        //Aquí es para quien le tocó lo de exportar como PDF, mandas llamar tus métodos
+
+                        break;
+                    }
+
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        //Aquí es para la opción de eliminar que supuestamente quería el profe
+        btnEliminar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        //Aquí es para quien le tocó agregarle las flechas
+        btnFlecha.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+
     }
 }
