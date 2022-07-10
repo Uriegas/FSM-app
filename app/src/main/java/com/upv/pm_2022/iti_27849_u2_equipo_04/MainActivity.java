@@ -4,9 +4,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
+
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +26,7 @@ import java.util.Map;
  * On pressed click and drag;           Create arrow to another state,            highlight in blue.
  */
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "Main_Activity";
     private Bitmap bitmap;
     private Canvas canvas;
     private HashMap<Figure, List<Figure>> adjacency_list;
@@ -29,8 +35,6 @@ public class MainActivity extends AppCompatActivity {
                                          "picture}[scale=0.2]\n\\tikzstyle{every node}+=[inner" +
                                          " sep=0pt]";
     private static String END_REGION   = "\\end{tikzpicture}\n\\end{center}\n\n\\end{document}\n";
-
-    Button btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
