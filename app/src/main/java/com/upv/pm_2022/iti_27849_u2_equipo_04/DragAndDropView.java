@@ -31,7 +31,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
 	private DragAndDropThread thread;
-	private ArrayList<State> states;
+	private ArrayList<Figure> figures;
 	//TODO: Implement adjacency list instead of ArrayList<State>
 	private HashMap<State, ArrayList<State>> adjacency_list;
 	private int currentIndex;
@@ -55,8 +55,8 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	@Override
 	public void surfaceCreated(SurfaceHolder arg0) {
 		// Initialize data
-		states = new ArrayList<State>();
-		states.add(new State(id++,500,500));
+		figures = new ArrayList<>();
+		figures.add(new State(id++,500,500));
 		currentIndex = -1;
 		// Initialize thread
 		thread = new DragAndDropThread(getHolder(), this);
@@ -88,8 +88,9 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		p.setAntiAlias(true);
 
 		canvas.drawColor(Color.WHITE);
-		for(State state : states)
-			 state.draw(canvas);
+		if(figures != null)
+			for(Figure figure : figures)
+				 figure.draw(canvas);
 	}
 
 	// TODO: Add on click without drag event, focus in center of the figure to write something
@@ -101,11 +102,15 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		int x = (int) event.getX(); int y = (int) event.getY();
 		switch(event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
-				getCurrentState(x,y);
+				// Andrea, en este `case` no ocupas cambiar codigo, solo para que sepas que cuando
+				// el usuario clickee a la orilla de un circulo, vas a tener currentIndex = -2.
+				getCurrentFigure(x,y);
 				break;
 			case MotionEvent.ACTION_MOVE:
 				if(currentIndex != -1)
-					states.get(currentIndex).onMove(x, y);
+					figures.get(currentIndex).onMove(x, y);
+				// Andrea, cuando currentIndex = -2 crea una nueva Arrow y añadela a la variable
+				// figures y cambia la variable currentIndex
 				break;
 			case MotionEvent.ACTION_UP:
 				currentIndex = -1;
@@ -140,11 +145,17 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	@Override
 	public void onLongPress(MotionEvent motionEvent) {
 		Log.d(TAG, "On long press: called");
+//		arrows.add(new Arrow(id++, (int) motionEvent.getX(), (int) motionEvent.getY()));
 	}
 
 	@Override
 	public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
 		Log.d(TAG, "On fling: called");
+		// Andrea, este metodo se ejecuta cuando el usuario suelta el dedo despues de hacer un
+		// `drag` (arrastrar el dedo).
+		// Aqui obten los valores (x,y) y crea checa si esos valores estan dentro de un circulo
+		// si esta fuera del circulo borra el Arrow.
+		// HINT: itera sobre solo las figuras que son State (ignora las variables de tipo Arrow)
 		return false;
 	}
 
@@ -157,7 +168,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
 		Log.d(TAG, "On single tap confirmed: called");
 		int x = (int) motionEvent.getX(); int y = (int) motionEvent.getY();
-		getCurrentState(x,y);
+		getCurrentFigure(x,y);
 
 		if(currentIndex != -1) { // TODO: Change color of the circle here
 			// Open Keyboard
@@ -179,9 +190,11 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		char key = (char) event.getUnicodeChar();
 		Log.d(TAG, "Key Up " + (char) event.getUnicodeChar() + " pressed");
-		if(currentIndex != -1) { //TODO: Implement BACKSPACE and ENTER keys
+		//TODO: Implement BACKSPACE and ENTER keys
+		if(currentIndex != -1 && figures.get(currentIndex) instanceof State) {
 			if (keyCode == KeyEvent.KEYCODE_DEL)
-				states.get(currentIndex).name.substring(0,states.get(currentIndex).name.length()-1);
+				((State)figures.get(currentIndex)).name.substring(0,
+						((State)figures.get(currentIndex)).name.length()-1);
 			else if((keyCode==KeyEvent.ACTION_DOWN)&&(keyCode == KeyEvent.KEYCODE_ENTER)){
 				clearFocus();
 				InputMethodManager imm = (InputMethodManager) getContext()
@@ -189,9 +202,9 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 				imm.hideSoftInputFromWindow(getWindowToken(), 0);
 			}
 			else
-				 states.get(currentIndex).name += (char) event.getUnicodeChar();
+				((State)figures.get(currentIndex)).name += (char) event.getUnicodeChar();
+			Log.d(TAG, "State name changed to " + ((State)figures.get(currentIndex)).name);
 		}
-		Log.d(TAG, "State name changed to " + states.get(currentIndex).name);
 		return false;
 	}
 
@@ -205,11 +218,11 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	public boolean onDoubleTap(MotionEvent motionEvent) {
 		Log.d(TAG, "On double tap: called");
 		int x = (int) motionEvent.getX(); int y = (int) motionEvent.getY();
-		getCurrentState(x,y);
+		getCurrentFigure(x,y);
 		if(currentIndex != -1)
-			states.get(currentIndex).setFinal();
+			((State)figures.get(currentIndex)).setFinal();
 		else
-			states.add(new State(id++, x, y));
+			figures.add(new State(id++, x, y));
 		return false;
 	}
 
@@ -227,10 +240,10 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	 * @param y
 	 * @return id of the current State
 	 */
-	private int getCurrentState(int x, int y) {
-		for(State state : states)
+	private int getCurrentFigure(int x, int y) {
+		for(Figure figure : figures)
 			if(currentIndex == -1)
-				currentIndex = state.onDown(x, y);
+				currentIndex = figure.onDown(x, y);
 		return currentIndex;
 	}
 }

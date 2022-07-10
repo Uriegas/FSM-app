@@ -5,6 +5,7 @@
 
 package com.upv.pm_2022.iti_27849_u2_equipo_04;
 
+import android.annotation.SuppressLint;
 import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
@@ -22,6 +23,7 @@ public class DragAndDropThread extends Thread {
 	
 	public void setRunning(boolean run) { this.run = run; }
 	
+	@SuppressLint("WrongCall")
 	@Override
 	public void run() {
 		Canvas canvas;

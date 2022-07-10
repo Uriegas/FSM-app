@@ -29,7 +29,8 @@ public class State extends Figure {
         paint.setStrokeWidth(2.5f);
         paint.setTextSize(32);
         paint.setTextAlign(Paint.Align.CENTER);
-        // TODO: Change letter size, tyoe and vertically align text.
+        // TODO: Change letter size, type and vertically align text.
+        //       This requires internet
 //        Typeface typeface = new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
 //        FormattedText formattedText = new FormattedText("Text to render", CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeFace, 16, Brushes.Black);
 //
@@ -52,7 +53,9 @@ public class State extends Figure {
      * Check that click is inside the figure
      * @param touchX
      * @param touchY
-     * @return if coordinates are inside circle return this id, otherwise return -1
+     * @return if coordinates are inside circle return this id,
+     *         -1 means no object selected,
+     *         -2 means create a new line
      */
     public int onDown(int touchX, int touchY) {
         // Pythagorean theorem in circle: x^2 + y^2 = r^2, if touched is (x_1, y_1) then
@@ -60,6 +63,11 @@ public class State extends Figure {
         // (x-x_1)^2 + (y-y_1)^2 < r^2
         if (((x-touchX) * (x-touchX)) + ((y-touchY) * (y-touchY)) < (r*r))
             return this.id;
+        // Andrea, aqui tienes que retornar -2 cuando la persona clickea a la orilla del circulo,
+        // es decir, cuando quiere crear una nueva linea. Vas a tener que cambiar un poco la logica
+        // de la linea 64, HINT: la variable ratio_percentage te puede servir
+//        else if( clicea a la orilla del circulo)
+//            return -2
         return -1;
     }
 
@@ -68,7 +76,10 @@ public class State extends Figure {
      * @param touchX
      * @param touchY
      */
-    public void onMove(int touchX, int touchY) { this.x = touchX; this.y = touchY; }
+    public void onMove(int touchX, int touchY) {
+        this.x = touchX; this.y = touchY;
+        // if border is selected then draw arrow
+    }
 
     /**
      * Set the state of

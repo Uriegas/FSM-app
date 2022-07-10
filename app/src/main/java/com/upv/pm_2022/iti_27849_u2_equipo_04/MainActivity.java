@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "Main_Activity";
     private Bitmap bitmap;
     private Canvas canvas;
-    private HashMap<Figure, List<Figure>> adjacency_list;
+    private HashMap<State, List<State>> adjacency_list;
     private static String START_REGION = "\\documentclass[12pt]{article}\n\\usepackage{tikz}\n" +
                                          "\n\\begin{document}\n\n\\begin{center}\n\\begin{tikz" +
                                          "picture}[scale=0.2]\n\\tikzstyle{every node}+=[inner" +
@@ -53,11 +53,19 @@ public class MainActivity extends AppCompatActivity {
      * Get the latex representation of the graph
      * @param adjacency_list a list representation nodes and their connections
      */
-    private static String toLatex(HashMap<Figure, List<Figure>> adjacency_list) {
+    private static String toLatex(HashMap<State, List<State>> adjacency_list) {
+        // Example:
+        // Input :=
+        //          S_1 -> S_2, S_3
+        //          S_2 -> S_1, S_3
+        //          S_3 -> S_4
+        // Output :=
+        //          \begin{tikzpicture}
+        //          \tikzstyle{node}
         String latex_output = START_REGION;
-        for(Map.Entry<Figure, List<Figure>> entry : adjacency_list.entrySet()) {
-            Figure node = entry.getKey();
-            List<Figure> adjacency = entry.getValue();
+        for(Map.Entry<State, List<State>> entry : adjacency_list.entrySet()) { // For each node...
+            State node = entry.getKey();
+            List<State> adjacency = entry.getValue();
 
             latex_output += "\n";
         }
