@@ -4,6 +4,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.text.Editable;
+import android.text.TextWatcher;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,8 +14,9 @@ import java.util.List;
  * A state of the FSM. Fixed size
  */
 public class State extends Figure {
-    private String name;
+    public String name;
     private boolean isFinal;
+    // private boolean isSelected; //Identify if this State has been selected
     private Paint paint = new Paint();
     private int r;
     private static final float ratio_percentage = (float)0.2;
@@ -36,13 +39,13 @@ public class State extends Figure {
 
     public State(int id, int x, int y, int r, String name) { this(id, x, y, r, name, false); }
 
-    public State(int id, int x, int y) { this(id, x, y, 80, ""); }
+    public State(int id, int x, int y) { this(id, x, y, 80, "S_" + id); }
 
     public void draw(Canvas canvas) {
         canvas.drawCircle(this.x, this.y, this.r, paint);
         if(isFinal)
             canvas.drawCircle(this.x, this.y, this.r-this.r*this.ratio_percentage, paint);
-        canvas.drawText("S_"+this.id, this.x, this.y, paint);
+        canvas.drawText(name, this.x, this.y, paint);
     }
 
     /**
@@ -55,9 +58,8 @@ public class State extends Figure {
         // Pythagorean theorem in circle: x^2 + y^2 = r^2, if touched is (x_1, y_1) then
         // the square of the distance from the center to the touched point should be less than r^2:
         // (x-x_1)^2 + (y-y_1)^2 < r^2
-        if (((x-touchX) * (x-touchX)) + ((y-touchY) * (y-touchY)) < (r*r)) {
+        if (((x-touchX) * (x-touchX)) + ((y-touchY) * (y-touchY)) < (r*r))
             return this.id;
-        }
         return -1;
     }
 
@@ -78,5 +80,5 @@ public class State extends Figure {
      * Set the name of the state
      * @param name
      */
-    public void setName(String name) { this.name = name; }
+    public void setName(String name) { this.name = name; paint.setColor(Color.BLUE); }
 }
