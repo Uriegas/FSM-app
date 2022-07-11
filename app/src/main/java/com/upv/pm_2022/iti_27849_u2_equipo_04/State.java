@@ -15,14 +15,13 @@ import java.util.List;
  */
 public class State extends Figure {
     public String name;
-    private boolean isFinal;
     // private boolean isSelected; //Identify if this State has been selected
     private Paint paint = new Paint();
     private int r;
     private static final float ratio_percentage = (float)0.2;
 
     public State(int id, int x, int y, int r, String name, boolean isFinal) {
-        this.id = id; this.x = x; this.y = y; this.r = r; this.name = name; this.isFinal = isFinal;
+        this.id = id; this.x = x; this.y = y; this.r = r; this.name = name; this.flag = isFinal;
         paint.setAntiAlias(true);
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
@@ -44,7 +43,7 @@ public class State extends Figure {
 
     public void draw(Canvas canvas) {
         canvas.drawCircle(this.x, this.y, this.r, paint);
-        if(isFinal)
+        if(this.flag)
             canvas.drawCircle(this.x, this.y, this.r-this.r*this.ratio_percentage, paint);
         canvas.drawText(name, this.x, this.y, paint);
     }
@@ -80,12 +79,6 @@ public class State extends Figure {
         this.x = touchX; this.y = touchY;
         // if border is selected then draw arrow
     }
-
-    /**
-     * Set the state of
-     * @return
-     */
-    public void setFinal() { this.isFinal = !this.isFinal; }
 
     /**
      * Set the name of the state

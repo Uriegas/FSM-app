@@ -220,7 +220,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		int x = (int) motionEvent.getX(); int y = (int) motionEvent.getY();
 		getCurrentFigure(x,y);
 		if(currentIndex != -1)
-			((State)figures.get(currentIndex)).setFinal();
+			figures.get(currentIndex).setFlag();
 		else
 			figures.add(new State(id++, x, y));
 		return false;

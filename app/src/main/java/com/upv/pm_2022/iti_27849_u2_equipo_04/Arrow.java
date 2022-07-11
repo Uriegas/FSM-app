@@ -6,13 +6,12 @@ import android.graphics.Paint;
 
 public class Arrow extends Figure {
     // TODO: Use a boolean variable to change the direction of the line
-    // private boolean direction;
     private int endX;
     private int endY;
     private Paint paint = new Paint();
 
     public Arrow(int id, int x, int y) {
-        this.id=id; this.x=x; this.y=y;
+        this.id=id; this.x=x; this.y=y; this.flag = false; // Flag used to change direction of arrow
         paint.setAntiAlias(true);
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
@@ -33,4 +32,13 @@ public class Arrow extends Figure {
     }
 
     public void onMove(int touchX, int touchY){ this.endX = touchX; this.endY = touchY; }
+
+    /**
+     * Change direction of the arrow
+     * TODO: this function
+     */
+    @Override
+    public void setFlag() {
+        this.flag = !this.flag;
+    }
 }

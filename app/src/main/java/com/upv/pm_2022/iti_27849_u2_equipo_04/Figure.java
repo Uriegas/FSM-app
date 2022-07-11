@@ -12,12 +12,15 @@ public abstract class Figure {
 	protected int id;
 	protected int x;
 	protected int y;
+	protected boolean flag;
 
 	public void draw(Canvas canvas){ }
 	public int onDown(int touchX, int touchY){
 		return this.id;
 	}
 	public void onMove(int touchX, int touchY){ }
+	public void setFlag() { this.flag = !this.flag; }
 	public int getX(){return this.x;}
 	public int getY(){return this.y;}
+
 }
