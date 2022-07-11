@@ -36,15 +36,17 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	private HashMap<State, ArrayList<State>> adjacency_list;
 	private int currentIndex;
 	int id = 0;
-	private GestureDetector gestureDetector;
+	private final GestureDetector gestureDetector;
 	private static final String TAG = "FSM_canvas";
-	
+	private final Paint p;
+
 	public DragAndDropView(Context context) {
 		super(context);
 		getHolder().addCallback(this);
 		gestureDetector = new GestureDetector(context, this);
 		setFocusable(true);
 		setFocusableInTouchMode(true);
+		this.p = new Paint();
 	}
 
 	@Override
@@ -58,6 +60,8 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		figures = new ArrayList<>();
 		figures.add(new State(id++,500,500));
 		currentIndex = -1;
+		//Initialize paint
+		p.setAntiAlias(true);
 		// Initialize thread
 		thread = new DragAndDropThread(getHolder(), this);
 		thread.setRunning(true);
@@ -84,9 +88,6 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	 */
 	@Override
 	public void onDraw(Canvas canvas) {
-		Paint p = new Paint();
-		p.setAntiAlias(true);
-
 		canvas.drawColor(Color.WHITE);
 		if(figures != null)
 			for(Figure figure : figures)
@@ -160,9 +161,9 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	}
 
 	/**
-	 * On single click, change name of the state
-	 * @param motionEvent
-	 * @return
+	 * On single confirmed click, change name of the state
+	 * @param motionEvent touch event
+	 * @return true if handled
 	 */
 	@Override
 	public boolean onSingleTapConfirmed(MotionEvent motionEvent) {
@@ -173,6 +174,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		if(currentIndex != -1) { // TODO: Change color of the circle here
 			// Open Keyboard
 			requestFocus();
+			((State)figures.get(currentIndex)).isEdited(true);
 			InputMethodManager imm = (InputMethodManager) getContext()
 					.getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.showSoftInput(this, InputMethodManager.SHOW_FORCED);
@@ -190,20 +192,21 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		char key = (char) event.getUnicodeChar();
 		Log.d(TAG, "Key Up " + (char) event.getUnicodeChar() + " pressed");
-		//TODO: Implement BACKSPACE and ENTER keys
+		//TODO: It makes sense having this code @onKeyDown() since that supports hardware keyboards
 		if(currentIndex != -1 && figures.get(currentIndex) instanceof State) {
-			if (keyCode == KeyEvent.KEYCODE_DEL)
-				((State)figures.get(currentIndex)).name.substring(0,
-						((State)figures.get(currentIndex)).name.length()-1);
-			else if((keyCode==KeyEvent.ACTION_DOWN)&&(keyCode == KeyEvent.KEYCODE_ENTER)){
+			State state = (State)figures.get(currentIndex);
+			if (keyCode==KeyEvent.KEYCODE_DEL && state.name.length()>0)
+				 state.name = state.name.substring(0, state.name.length()-1);
+			else if(keyCode == KeyEvent.KEYCODE_ENTER) {
 				clearFocus();
+				state.isEdited(false);
 				InputMethodManager imm = (InputMethodManager) getContext()
 						.getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(getWindowToken(), 0);
 			}
 			else
 				((State)figures.get(currentIndex)).name += (char) event.getUnicodeChar();
-			Log.d(TAG, "State name changed to " + ((State)figures.get(currentIndex)).name);
+			Log.d(TAG, "State name changed to " + state.name);
 		}
 		return false;
 	}
@@ -211,8 +214,8 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	/**
 	 * On double click, set final or not final to the state,
 	 * if clicked outside of a circle create a new circle
-	 * @param motionEvent
-	 * @return
+	 * @param motionEvent touch event
+	 * @return true if handled
 	 */
 	@Override
 	public boolean onDoubleTap(MotionEvent motionEvent) {
@@ -236,8 +239,8 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	 * Get the current State, that is the clicked Circle.
 	 * <p>
 	 * This method sets the attribute currentIndex, there is no need to set it outside
-	 * @param x
-	 * @param y
+	 * @param x position in the x-axis
+	 * @param y position in the y-axis
 	 * @return id of the current State
 	 */
 	private int getCurrentFigure(int x, int y) {

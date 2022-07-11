@@ -3,12 +3,7 @@ package com.upv.pm_2022.iti_27849_u2_equipo_04;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Path;
-import android.text.Editable;
-import android.text.TextWatcher;
-
-import java.util.HashMap;
-import java.util.List;
+import android.graphics.Typeface;
 
 /**
  * A state of the FSM. Fixed size
@@ -16,8 +11,8 @@ import java.util.List;
 public class State extends Figure {
     public String name;
     // private boolean isSelected; //Identify if this State has been selected
-    private Paint paint = new Paint();
-    private int r;
+    private final Paint paint = new Paint();
+    private final int r;
     private static final float ratio_percentage = (float)0.2;
 
     public State(int id, int x, int y, int r, String name, boolean isFinal) {
@@ -26,15 +21,9 @@ public class State extends Figure {
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(2.5f);
-        paint.setTextSize(32);
+        paint.setTextSize(38);
         paint.setTextAlign(Paint.Align.CENTER);
-        // TODO: Change letter size, type and vertically align text.
-        //       This requires internet
-//        Typeface typeface = new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
-//        FormattedText formattedText = new FormattedText("Text to render", CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeFace, 16, Brushes.Black);
-//
-//        Point textLocation = new Point(centerPoint.X - formattedText.WidthIncludingTrailingWhitespace / 2, center.Y - formattedText.Height);
-//        drawingContext.DrawText(formattedText, textLocation);
+        paint.setTypeface(Typeface.SANS_SERIF);
     }
 
     public State(int id, int x, int y, int r, String name) { this(id, x, y, r, name, false); }
@@ -44,14 +33,14 @@ public class State extends Figure {
     public void draw(Canvas canvas) {
         canvas.drawCircle(this.x, this.y, this.r, paint);
         if(this.flag)
-            canvas.drawCircle(this.x, this.y, this.r-this.r*this.ratio_percentage, paint);
+            canvas.drawCircle(this.x, this.y, this.r-this.r*ratio_percentage, paint);
         canvas.drawText(name, this.x, this.y, paint);
     }
 
     /**
      * Check that click is inside the figure
-     * @param touchX
-     * @param touchY
+     * @param touchX x touched
+     * @param touchY y touched
      * @return if coordinates are inside circle return this id,
      *         -1 means no object selected,
      *         -2 means create a new line
@@ -72,8 +61,8 @@ public class State extends Figure {
 
     /**
      * Change the position of the figure
-     * @param touchX
-     * @param touchY
+     * @param touchX x touched
+     * @param touchY y touched
      */
     public void onMove(int touchX, int touchY) {
         this.x = touchX; this.y = touchY;
@@ -81,8 +70,13 @@ public class State extends Figure {
     }
 
     /**
-     * Set the name of the state
-     * @param name
+     * Set color of the circle if it is being edited
+     * @param isEdited true if the name of this object is being edited
      */
-    public void setName(String name) { this.name = name; paint.setColor(Color.BLUE); }
+    public void isEdited(boolean isEdited) {
+        if(isEdited)
+            paint.setColor(Color.BLUE);
+        else
+            paint.setColor(Color.BLACK);
+    }
 }

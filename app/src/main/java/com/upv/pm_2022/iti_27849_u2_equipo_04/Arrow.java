@@ -8,7 +8,7 @@ public class Arrow extends Figure {
     // TODO: Use a boolean variable to change the direction of the line
     private int endX;
     private int endY;
-    private Paint paint = new Paint();
+    private final Paint paint = new Paint();
 
     public Arrow(int id, int x, int y) {
         this.id=id; this.x=x; this.y=y; this.flag = false; // Flag used to change direction of arrow
