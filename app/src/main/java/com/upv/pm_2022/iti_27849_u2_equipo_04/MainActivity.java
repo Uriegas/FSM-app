@@ -46,11 +46,15 @@ public class MainActivity extends AppCompatActivity {
     private Bitmap bitmap;
     private Canvas canvas;
     private HashMap<State, List<State>> adjacency_list;
-    private static String START_REGION = "\\documentclass[12pt]{article}\n\\usepackage{tikz}\n" +
-                                         "\n\\begin{document}\n\n\\begin{center}\n\\begin{tikz" +
-                                         "picture}[scale=0.2]\n\\tikzstyle{every node}+=[inner" +
-                                         " sep=0pt]";
-    private static String END_REGION   = "\\end{tikzpicture}\n\\end{center}\n\n\\end{document}\n";
+    private final static String STR_REGION="\\documentclass[12pt]{article}\n\\usepackage{tikz}\n" +
+                                           "\n\\begin{document}\n\n\\begin{center}\n\\begin{tikz" +
+                                           "picture}[scale=0.2]\n\\tikzstyle{every node}+=[inner" +
+                                           " sep=0pt]";
+    private final static String END_REGION="\\end{tikzpicture}\n\\end{center}\n\n\\end{document}\n";
+    private final static String DRAW_COMMAND="\\draw";
+    private final static String FILL_COMMAND="\\fill";
+    private final static String COLOR       ="[black]";
+    private final static int CONVERSION_RATIO = 27;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,23 +141,31 @@ public class MainActivity extends AppCompatActivity {
     }
     /**
      * Get the latex representation of the graph
-     * @param adjacency_list a list representation nodes and their connections
+     * @param figures a list containing nodes and arrows
      */
-    private static String toLatex(HashMap<State, List<State>> adjacency_list) {
-        // Example:
-        // Input :=
-        //          S_1 -> S_2, S_3
-        //          S_2 -> S_1, S_3
-        //          S_3 -> S_4
-        // Output :=
-        //          \begin{tikzpicture}
-        //          \tikzstyle{node}
-        String latex_output = START_REGION;
-        for(Map.Entry<State, List<State>> entry : adjacency_list.entrySet()) { // For each node...
-            State node = entry.getKey();
-            List<State> adjacency = entry.getValue();
-
-            latex_output += "\n";
+    private static String toLatex(ArrayList<Figure> figures) {
+        String latex_output = STR_REGION;
+        for(Figure figure : figures) {
+            if(figure instanceof State) {
+                State node = (State)figure;
+                // Draw circle
+                latex_output+=DRAW_COMMAND + ' ' + COLOR + " (" + node.getX() + ',' + node.getY() +
+                              " (" + (State.r/CONVERSION_RATIO) + ");\n";
+                if(!node.name.isEmpty()) // Draw name
+                    latex_output+=DRAW_COMMAND + ' ' + COLOR + " (" + node.getX() + ',' +
+                                  node.getY() + "node" + "{$" + node.name + "$};\n";
+                if(node.flag) // Draw inner circle (final state)
+                    latex_output+=DRAW_COMMAND + ' ' + COLOR + " (" + node.getX()+','+ node.getY() +
+                            " (" + ((State.r*(1-State.ratio_percentage))/CONVERSION_RATIO) + ");\n";
+            }
+            else { // if(figure instanceof Arrow)
+                Arrow arrow = (Arrow)figure;
+//                if(arrow.isArc())
+                    // Draw arched line
+//                else
+                latex_output += DRAW_COMMAND + COLOR + " (" + arrow.getX() + ',' + arrow.getY() +
+                                ") --" + " (" + arrow.endX + ',' + arrow.endY + ");\n";
+            }
         }
         return latex_output + END_REGION;
     }

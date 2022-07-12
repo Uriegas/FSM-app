@@ -6,8 +6,8 @@ import android.graphics.Paint;
 
 public class Arrow extends Figure {
     // TODO: Use a boolean variable to change the direction of the line
-    private int endX;
-    private int endY;
+    public int endX;
+    public int endY;
     private final Paint paint = new Paint();
 
     public Arrow(int id, int x, int y) {

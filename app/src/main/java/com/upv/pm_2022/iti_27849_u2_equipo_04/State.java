@@ -12,11 +12,11 @@ public class State extends Figure {
     public String name;
     // private boolean isSelected; //Identify if this State has been selected
     private final Paint paint = new Paint();
-    private final int r;
-    private static final float ratio_percentage = (float)0.2;
+    public static final int r = 81;
+    public static final float ratio_percentage = (float)0.2;
 
-    public State(int id, int x, int y, int r, String name, boolean isFinal) {
-        this.id = id; this.x = x; this.y = y; this.r = r; this.name = name; this.flag = isFinal;
+    public State(int id, int x, int y, String name, boolean isFinal) {
+        this.id = id; this.x = x; this.y = y; this.name = name; this.flag = isFinal;
         paint.setAntiAlias(true);
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
@@ -26,14 +26,14 @@ public class State extends Figure {
         paint.setTypeface(Typeface.SANS_SERIF);
     }
 
-    public State(int id, int x, int y, int r, String name) { this(id, x, y, r, name, false); }
+    public State(int id, int x, int y, String name) { this(id, x, y, name, false); }
 
-    public State(int id, int x, int y) { this(id, x, y, 80, "S_" + id); }
+    public State(int id, int x, int y) { this(id, x, y, "S_" + id); }
 
     public void draw(Canvas canvas) {
-        canvas.drawCircle(this.x, this.y, this.r, paint);
+        canvas.drawCircle(this.x, this.y, r, paint);
         if(this.flag)
-            canvas.drawCircle(this.x, this.y, this.r-this.r*ratio_percentage, paint);
+            canvas.drawCircle(this.x, this.y, r-r*ratio_percentage, paint);
         canvas.drawText(name, this.x, this.y, paint);
     }
 
