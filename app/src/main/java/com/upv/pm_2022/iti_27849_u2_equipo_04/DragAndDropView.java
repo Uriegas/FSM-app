@@ -256,4 +256,12 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 				currentIndex = figure.onDown(x, y);
 		return currentIndex;
 	}
+
+	/**
+	 * Get all figures in the canvas
+	 * @return a list of figures
+	 */
+	public ArrayList<Figure> getAllFigures() {
+		return this.figures;
+	}
 }

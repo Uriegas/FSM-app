@@ -78,4 +78,24 @@ public class State extends Figure {
         else
             paint.setColor(Color.BLACK);
     }
+
+    /**
+     * Converts this state to its latex representation.
+     * @param resize_factor factor to resize the coordinates
+     * @return latex representation of this state in string format
+     */
+    public String toLatex(float resize_factor) {
+        float x = getX()*resize_factor, y = getY()*resize_factor;
+        String latex_output = "";
+        // Draw circle
+        latex_output += DRAW_COMMAND + ' ' + COLOR + " (" + x + ", -" + y + ") circle (" +
+                        (State.r/CONVERSION_RATIO) + ");\n";
+        if(!this.name.isEmpty()) // Draw name
+            latex_output += DRAW_COMMAND + ' ' + COLOR + " (" + x + ", -" + y + ") " + "node" +
+                            " {$" + this.name + "$};\n";
+        if(this.flag) // Draw inner circle (final state)
+            latex_output += DRAW_COMMAND + ' ' + COLOR + " (" + x + ", -" + y + ") circle (" +
+                            ((State.r*(1-State.ratio_percentage))/CONVERSION_RATIO) + ");\n";
+        return latex_output;
+    }
 }

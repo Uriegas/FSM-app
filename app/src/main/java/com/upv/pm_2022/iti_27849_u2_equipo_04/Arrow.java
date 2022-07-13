@@ -12,6 +12,7 @@ public class Arrow extends Figure {
     public boolean isLocked;
     private final Paint paint = new Paint();
     private final Paint p_fill= new Paint();
+    // TODO: Same tolerance for width of the arrow head (triangle)
     private final static int tolerance = 5;
 
     public Arrow(int id, int x, int y) {
@@ -81,5 +82,19 @@ public class Arrow extends Figure {
         path.lineTo((float)(x - 24 * dx + 15 * dy), (float)(y - 24 * dy - 15 * dx));
         path.lineTo((float)(x - 24 * dx - 15 * dy), (float)(y - 24 * dy + 15 * dx));
         canvas.drawPath(path, p_fill);
+    }
+
+    /**
+     * Converts this arrow to its latex representation.
+     * @param resize_factor factor to resize the coordinates
+     * @return latex representation of this arrow in string format
+     */
+    public String toLatex(float resize_factor) {
+        String latex_output = "";
+        latex_output += DRAW_COMMAND + COLOR + " (" + getX()*resize_factor + ", -" +
+                        getY()*resize_factor +  ") --" + " (" + endX*resize_factor + ", -" +
+                        endY*resize_factor + ");\n";
+        // TODO: Draw arrow head, should save this info in Arrow class
+        return latex_output;
     }
 }

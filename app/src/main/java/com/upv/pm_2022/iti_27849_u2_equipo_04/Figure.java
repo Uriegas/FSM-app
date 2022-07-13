@@ -14,6 +14,12 @@ public abstract class Figure {
 	protected int y;
 	protected boolean flag;
 
+	// Variables for toLatex implementations
+	protected final static String DRAW_COMMAND	= "\\draw";
+	protected final static String FILL_COMMAND 	= "\\fill";
+	protected final static String COLOR       	= "[black]";
+	protected final static int CONVERSION_RATIO 	= 27;
+
 	public void draw(Canvas canvas){ }
 	public int onDown(int touchX, int touchY){
 		return this.id;
@@ -22,5 +28,5 @@ public abstract class Figure {
 	public void setFlag() { this.flag = !this.flag; }
 	public int getX(){return this.x;}
 	public int getY(){return this.y;}
-
+	public abstract String toLatex(float resize_factor);
 }
