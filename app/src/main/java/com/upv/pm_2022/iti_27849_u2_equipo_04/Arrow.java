@@ -90,11 +90,23 @@ public class Arrow extends Figure {
      * @return latex representation of this arrow in string format
      */
     public String toLatex(float resize_factor) {
+        float x = getX()*resize_factor, y = getY()*resize_factor, x_1, y_1, x_2, y_2;
+        float endX = this.endX*resize_factor, endY = this.endY*resize_factor;
+        double alpha = Math.atan2(endY-y, endX-x);
+        double dx = Math.cos(alpha);
+        double dy = Math.sin(alpha);
+        x_1 = (float)(endX - 24 * dx * resize_factor + 15 * dy * resize_factor);
+        y_1 = (float)(endY - 24 * dy * resize_factor - 15 * dx * resize_factor);
+        x_2 = (float)(endX - 24 * dx * resize_factor - 15 * dy * resize_factor);
+        y_2 = (float)(endY - 24 * dy * resize_factor + 15 * dx * resize_factor);
+
         String latex_output = "";
-        latex_output += DRAW_COMMAND + COLOR + " (" + getX()*resize_factor + ", -" +
-                        getY()*resize_factor +  ") --" + " (" + endX*resize_factor + ", -" +
-                        endY*resize_factor + ");\n";
-        // TODO: Draw arrow head, should save this info in Arrow class
+        // Draw arrow
+        latex_output += DRAW_COMMAND + COLOR + " (" + x + ", -" + y + ") --" +
+                        " (" + endX + ", -" + endY + ");\n";
+        // Draw arrow head (triangle)
+        latex_output += FILL_COMMAND + COLOR + " (" + endX + ", -" + endY + ") -- (" +
+                        x_1 + ", -" + y_1 + ") -- (" + x_2 + ", -" + y_2 + ");\n";
         return latex_output;
     }
 }
