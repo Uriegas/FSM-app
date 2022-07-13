@@ -10,7 +10,6 @@ import android.graphics.Typeface;
  */
 public class State extends Figure {
     public String name;
-    // private boolean isSelected; //Identify if this State has been selected
     private final Paint paint = new Paint();
     public static final int r = 81;
     public static final float ratio_percentage = (float)0.2;
@@ -49,13 +48,14 @@ public class State extends Figure {
         // Pythagorean theorem in circle: x^2 + y^2 = r^2, if touched is (x_1, y_1) then
         // the square of the distance from the center to the touched point should be less than r^2:
         // (x-x_1)^2 + (y-y_1)^2 < r^2
-        if (((x-touchX) * (x-touchX)) + ((y-touchY) * (y-touchY)) < (r*r))
+        if (    ((x-touchX) * (x-touchX)) + ((y-touchY) * (y-touchY)) <
+                (r*r*(1-ratio_percentage)*(1-ratio_percentage)) )
             return this.id;
-        // Andrea, aqui tienes que retornar -2 cuando la persona clickea a la orilla del circulo,
-        // es decir, cuando quiere crear una nueva linea. Vas a tener que cambiar un poco la logica
-        // de la linea 64, HINT: la variable ratio_percentage te puede servir
-//        else if( clicea a la orilla del circulo)
-//            return -2
+        else if( (r*r*(1-ratio_percentage)*(1-ratio_percentage)) < //Clicked on edge of the circle
+                 ((x-touchX) * (x-touchX)) + ((y-touchY) * (y-touchY)) &&
+                 ((x-touchX) * (x-touchX)) + ((y-touchY) * (y-touchY)) <
+                 (r*r*(1+ratio_percentage)*(1+ratio_percentage)) )
+            return -2;
         return -1;
     }
 
@@ -66,7 +66,6 @@ public class State extends Figure {
      */
     public void onMove(int touchX, int touchY) {
         this.x = touchX; this.y = touchY;
-        // if border is selected then draw arrow
     }
 
     /**

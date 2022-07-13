@@ -123,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
 //        canvas = new Canvas(bitmap);
         // want fullscreen, we hide Activity's title and notification bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -165,13 +164,12 @@ public class MainActivity extends AppCompatActivity {
 //                else
                 latex_output += DRAW_COMMAND + COLOR + " (" + arrow.getX() + ',' + arrow.getY() +
                                 ") --" + " (" + arrow.endX + ',' + arrow.endY + ");\n";
+                // TODO: Draw arrow head, should save this info in Arrow class
+
             }
         }
         return latex_output + END_REGION;
     }
-
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){

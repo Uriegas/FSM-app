@@ -4,17 +4,19 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.util.Log;
 
 public class Arrow extends Figure {
     // TODO: Arched arrow
     public int endX;
     public int endY;
+    public boolean isLocked;
     private final Paint paint = new Paint();
     private final Paint p_fill= new Paint();
+    private final static int tolerance = 5;
 
     public Arrow(int id, int x, int y) {
         this.id=id; this.x=x; this.y=y; this.flag = false; // Flag used to change direction of arrow
+        this.isLocked = false;
         paint.setAntiAlias(true);
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
@@ -22,7 +24,6 @@ public class Arrow extends Figure {
         p_fill.setStyle(Paint.Style.FILL);
         p_fill.setColor(Color.BLACK);
         p_fill.setStrokeWidth(2.5f);
-        setFlag();
     }
 
     public void draw(Canvas canvas){
@@ -35,7 +36,21 @@ public class Arrow extends Figure {
         drawArrowHead(canvas, this.endX, this.endY, Math.atan2(this.endY-this.y, this.endX-this.x));
     }
 
-    public int onDown(int touchX, int touchY){ onMove(touchX, touchY); return this.id; }
+    /**
+     * Calculates the distance between the touched point P and the line L_1 (this arrow)
+     * @param touchX touched point in x
+     * @param touchY touched point in y
+     * @return object id if the distance P - L_1 is less than the tolerance parameter, -1 otherwise
+     */
+    public int onDown(int touchX, int touchY){
+        double d; // Distance between point (touchX, touchY) and line (this arrow)
+        // Find distance from point P_0 to line (P_1, P_2)
+        d = Math.abs((this.endX-this.x) * (this.y-touchY) - (this.x-touchX) * (this.endY-this.y))
+            / Math.sqrt(Math.pow(this.endX-this.x,2) + Math.pow(this.endY-this.y,2));
+        if(d < tolerance)
+            return this.id;
+        return -1;
+    }
 
     public void onMove(int touchX, int touchY){ this.endX = touchX; this.endY = touchY; }
 
@@ -52,7 +67,7 @@ public class Arrow extends Figure {
 
     /**
      * Draws a triangle pointing to the direction of the drawn arrow
-     * @param canvas canvast draw in
+     * @param canvas canvas draw in
      * @param x coordinate of the last point of the arrow
      * @param y coordinate of the last point of the arrow
      * @param alpha angle from the cartesian plane to the given coordinate (x,y)

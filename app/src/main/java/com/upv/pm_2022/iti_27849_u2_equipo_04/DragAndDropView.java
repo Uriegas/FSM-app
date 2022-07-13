@@ -1,39 +1,29 @@
 /*
  * Author: Meta @ vidasconcurrentes
  * Related to: http://vidasconcurrentes.blogspot.com/2011/06/detectando-drag-drop-en-un-canvas-de.html
+ * Edited by Andrea Charles, Eduardo Uriegas
  */
 
 package com.upv.pm_2022.iti_27849_u2_equipo_04;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
 import android.content.Context;
-import android.gesture.GestureOverlayView;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.Build;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
-
-import androidx.annotation.RequiresApi;
 
 public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callback,
 		GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
 	private DragAndDropThread thread;
 	private ArrayList<Figure> figures;
-	//TODO: Implement adjacency list instead of ArrayList<State>
-	private HashMap<State, ArrayList<State>> adjacency_list;
 	private int currentIndex;
 	int id = 0;
 	private final GestureDetector gestureDetector;
@@ -84,7 +74,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 
 	/**
 	 * Draws all the states aka circles
-	 * @param canvas
+	 * @param canvas canvas to draw into
 	 */
 	@Override
 	public void onDraw(Canvas canvas) {
@@ -94,8 +84,6 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 				 figure.draw(canvas);
 	}
 
-	// TODO: Add on click without drag event, focus in center of the figure to write something
-	//		 Add on double click inside circle draw or erase final state.
 	// TODO: Move functionality from onTouchEvent to Gestures
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
@@ -103,17 +91,23 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		int x = (int) event.getX(); int y = (int) event.getY();
 		switch(event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
-				// Andrea, en este `case` no ocupas cambiar codigo, solo para que sepas que cuando
-				// el usuario clickee a la orilla de un circulo, vas a tener currentIndex = -2.
 				getCurrentFigure(x,y);
 				break;
 			case MotionEvent.ACTION_MOVE:
-				if(currentIndex != -1)
+				if(currentIndex == -2) {
+					Arrow arrow = new Arrow(id++, x, y);
+					figures.add(arrow);
+					currentIndex = arrow.onDown(x,y);
+				}
+				else if(currentIndex != -1)
+					if(figures.get(currentIndex) instanceof Arrow &&
+					   ((Arrow)figures.get(currentIndex)).isLocked)
+						break;
 					figures.get(currentIndex).onMove(x, y);
-				// Andrea, cuando currentIndex = -2 crea una nueva Arrow y añadela a la variable
-				// figures y cambia la variable currentIndex
 				break;
 			case MotionEvent.ACTION_UP:
+				if(currentIndex != -1 && figures.get(currentIndex) instanceof Arrow)
+					((Arrow)figures.get(currentIndex)).isLocked = true;
 				currentIndex = -1;
 				break;
 		}
@@ -149,6 +143,14 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 //		arrows.add(new Arrow(id++, (int) motionEvent.getX(), (int) motionEvent.getY()));
 	}
 
+	/**
+	 * When an arrow is created it will be locked, thus it can not be redrawn
+	 * @param motionEvent event
+	 * @param motionEvent1 new event
+	 * @param v position v
+	 * @param v1 position v1
+	 * @return true if handled
+	 */
 	@Override
 	public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
 		Log.d(TAG, "On fling: called");
@@ -157,7 +159,11 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		// Aqui obten los valores (x,y) y crea checa si esos valores estan dentro de un circulo
 		// si esta fuera del circulo borra el Arrow.
 		// HINT: itera sobre solo las figuras que son State (ignora las variables de tipo Arrow)
-		return false;
+		int x = (int) motionEvent.getX(); int y = (int) motionEvent.getY();
+		getCurrentFigure(x,y);
+		if(currentIndex != -1 && figures.get(currentIndex) instanceof Arrow)
+			((Arrow)figures.get(currentIndex)).isLocked = true;
+		return true;
 	}
 
 	/**
@@ -171,7 +177,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		int x = (int) motionEvent.getX(); int y = (int) motionEvent.getY();
 		getCurrentFigure(x,y);
 
-		if(currentIndex != -1) { // TODO: Change color of the circle here
+		if(currentIndex != -1 && figures.get(currentIndex) instanceof State) {
 			// Open Keyboard
 			requestFocus();
 			((State)figures.get(currentIndex)).isEdited(true);
@@ -190,7 +196,6 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		char key = (char) event.getUnicodeChar();
 		Log.d(TAG, "Key Up " + (char) event.getUnicodeChar() + " pressed");
 		//TODO: It makes sense having this code @onKeyDown() since that supports hardware keyboards
 		if(currentIndex != -1 && figures.get(currentIndex) instanceof State) {
@@ -239,6 +244,8 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	 * Get the current State, that is the clicked Circle.
 	 * <p>
 	 * This method sets the attribute currentIndex, there is no need to set it outside
+	 * <p>
+	 * TODO: Handle case of clicking an arrow
 	 * @param x position in the x-axis
 	 * @param y position in the y-axis
 	 * @return id of the current State
