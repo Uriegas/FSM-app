@@ -107,7 +107,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 					figures.add(arrow);
 					currentIndex = arrow.onDown(x,y);
 				}
-				else if(currentIndex != -1) { // If a circle is touched and not locked move it
+				else if(currentIndex > -1) { // If a circle is touched and not locked move it
 					if (figures.get(currentIndex) instanceof Arrow &&
 							((Arrow) figures.get(currentIndex)).isLocked)
 						break;
@@ -115,7 +115,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 				}
 				break;
 			case MotionEvent.ACTION_UP:
-				if(currentIndex != -1 && figures.get(currentIndex) instanceof Arrow)
+				if(currentIndex > -1 && figures.get(currentIndex) instanceof Arrow)
 					((Arrow)figures.get(currentIndex)).isLocked = true;
 				currentIndex = -1;
 				break;
@@ -164,11 +164,6 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	@Override
 	public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
 		Log.d(TAG, "On fling: called");
-		// Andrea, este metodo se ejecuta cuando el usuario suelta el dedo despues de hacer un
-		// `drag` (arrastrar el dedo).
-		// Aqui obten los valores (x,y) y crea checa si esos valores estan dentro de un circulo
-		// si esta fuera del circulo borra el Arrow.
-		// HINT: itera sobre solo las figuras que son State (ignora las variables de tipo Arrow)
 		int x = (int) motionEvent.getX(); int y = (int) motionEvent.getY();
 		getCurrentFigure(x,y);
 		if(currentIndex != -1 && figures.get(currentIndex) instanceof Arrow)
@@ -187,7 +182,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		int x = (int) motionEvent.getX(); int y = (int) motionEvent.getY();
 		getCurrentFigure(x,y);
 
-		if(currentIndex != -1 && figures.get(currentIndex) instanceof State) {
+		if(currentIndex > -1 && figures.get(currentIndex) instanceof State) {
 			// Open Keyboard
 			requestFocus();
 			((State)figures.get(currentIndex)).isEdited(true);
@@ -237,7 +232,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		Log.d(TAG, "On double tap: called");
 		int x = (int) motionEvent.getX(); int y = (int) motionEvent.getY();
 		getCurrentFigure(x,y);
-		if(currentIndex != -1)
+		if(currentIndex > -1)
 			figures.get(currentIndex).setFlag();
 		else
 			figures.add(new State(id++, x, y));

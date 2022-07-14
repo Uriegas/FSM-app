@@ -13,10 +13,11 @@ public class Arrow extends Figure {
     private final Paint paint = new Paint();
     private final Paint p_fill= new Paint();
     // TODO: Same tolerance for width of the arrow head (triangle)
-    private final static int tolerance = 5;
+    private final static int tolerance = 25;
 
     public Arrow(int id, int x, int y) {
         this.id=id; this.x=x; this.y=y; this.flag = false; // Flag used to change direction of arrow
+        this.endX = x; this.endY = y;
         this.isLocked = false;
         paint.setAntiAlias(true);
         paint.setColor(Color.BLACK);
@@ -48,7 +49,7 @@ public class Arrow extends Figure {
         // Find distance from point P_0 to line (P_1, P_2)
         d = Math.abs((this.endX-this.x) * (this.y-touchY) - (this.x-touchX) * (this.endY-this.y))
             / Math.sqrt(Math.pow(this.endX-this.x,2) + Math.pow(this.endY-this.y,2));
-        if(d < tolerance)
+        if(d < tolerance || Double.isNaN(d))
             return this.id;
         return -1;
     }

@@ -12,7 +12,8 @@ public class State extends Figure {
     public String name;
     private final Paint paint = new Paint();
     public static final int r = 81;
-    public static final float ratio_percentage = (float)0.2;
+    public static final float ratio_percentage  = (float)0.35;
+    public static final float final_ratio       = (float)0.2;
 
     public State(int id, int x, int y, String name, boolean isFinal) {
         this.id = id; this.x = x; this.y = y; this.name = name; this.flag = isFinal;
@@ -32,7 +33,7 @@ public class State extends Figure {
     public void draw(Canvas canvas) {
         canvas.drawCircle(this.x, this.y, r, paint);
         if(this.flag)
-            canvas.drawCircle(this.x, this.y, r-r*ratio_percentage, paint);
+            canvas.drawCircle(this.x, this.y, r-r*final_ratio, paint);
         canvas.drawText(name, this.x, this.y, paint);
     }
 
@@ -49,7 +50,7 @@ public class State extends Figure {
         // the square of the distance from the center to the touched point should be less than r^2:
         // (x-x_1)^2 + (y-y_1)^2 < r^2
         if (    ((x-touchX) * (x-touchX)) + ((y-touchY) * (y-touchY)) <
-                (r*r*(1-ratio_percentage)*(1-ratio_percentage)) )
+                (r*r*(1.1-ratio_percentage)*(1.1-ratio_percentage)) )
             return this.id;
         else if( (r*r*(1-ratio_percentage)*(1-ratio_percentage)) < //Clicked on edge of the circle
                  ((x-touchX) * (x-touchX)) + ((y-touchY) * (y-touchY)) &&
@@ -95,7 +96,7 @@ public class State extends Figure {
                             " {$" + this.name + "$};\n";
         if(this.flag) // Draw inner circle (final state)
             latex_output += DRAW_COMMAND + ' ' + COLOR + " (" + x + ", -" + y + ") circle (" +
-                            ((State.r*(1-State.ratio_percentage))/CONVERSION_RATIO) + ");\n";
+                            ((State.r*(1-State.final_ratio))/CONVERSION_RATIO) + ");\n";
         return latex_output;
     }
 }
