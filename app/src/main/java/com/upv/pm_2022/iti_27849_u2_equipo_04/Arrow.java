@@ -6,14 +6,14 @@ import android.graphics.Paint;
 import android.graphics.Path;
 
 public class Arrow extends Figure {
-    // TODO: Arched arrow
+    // TODO: Arched arrow and Self Linked arrow
     public int endX;
     public int endY;
     public boolean isLocked;
     private final Paint paint = new Paint();
     private final Paint p_fill= new Paint();
     // TODO: Same tolerance for width of the arrow head (triangle)
-    private final static int tolerance = 25;
+    private final static int tolerance = 20;
 
     public Arrow(int id, int x, int y) {
         this.id=id; this.x=x; this.y=y; this.flag = false; // Flag used to change direction of arrow
@@ -39,17 +39,34 @@ public class Arrow extends Figure {
     }
 
     /**
-     * Calculates the distance between the touched point P and the line L_1 (this arrow)
+     * Calculates the distance between the touched point E and line <b>segment</b> AB (this arrow)
+     * <p>
+     * This function uses dot products to take into account that a line segment has bounds
      * @param touchX touched point in x
      * @param touchY touched point in y
-     * @return object id if the distance P - L_1 is less than the tolerance parameter, -1 otherwise
+     * @return object id if the distance AB_E is less than the tolerance parameter, -1 otherwise
      */
     public int onDown(int touchX, int touchY){
-        double d; // Distance between point (touchX, touchY) and line (this arrow)
-        // Find distance from point P_0 to line (P_1, P_2)
-        d = Math.abs((this.endX-this.x) * (this.y-touchY) - (this.x-touchX) * (this.endY-this.y))
-            / Math.sqrt(Math.pow(this.endX-this.x,2) + Math.pow(this.endY-this.y,2));
-        if(d < tolerance || Double.isNaN(d))
+        // Find distance from point E to line segment (AB)
+        double d; // Distance between point E (touchX, touchY) and line segment AB (this arrow)
+        int a_x = this.x, a_y = this.y, b_x = this.endX, b_y = this.endY, e_x = touchX, e_y =touchY;
+
+        // Vectors
+        double ab_x, ab_y, be_x, be_y, ae_x, ae_y;
+        ab_x = b_x - a_x; ab_y = b_y - a_y;
+        be_x = e_x - b_x; be_y = e_y - b_y;
+        ae_x = e_x - a_x; ae_y = e_y - a_y;
+
+        // Dot products
+        double ab_be = (ab_x * be_x + ab_y * be_y), ab_ae = (ab_x * ae_x + ab_y * ae_y);
+
+        if(ab_be > 0 || ab_ae < 0) // Point E out of bounds
+            d = tolerance+1;
+        else // Point E inside bounds
+            d = Math.abs((b_x-a_x) * (a_y-e_y) - (a_x-e_x) * (b_y-a_y))
+                /Math.sqrt(Math.pow(b_x-a_x, 2) + Math.pow(b_y-a_y, 2));
+
+        if(d < tolerance || Double.isNaN(d)) // We also consider the case: E inside line segment AB
             return this.id;
         return -1;
     }
