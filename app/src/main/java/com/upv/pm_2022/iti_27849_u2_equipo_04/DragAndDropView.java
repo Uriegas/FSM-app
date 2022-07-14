@@ -7,6 +7,8 @@
 package com.upv.pm_2022.iti_27849_u2_equipo_04;
 
 import java.util.ArrayList;
+
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -19,16 +21,20 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.inputmethod.InputMethodManager;
 
+import com.upv.pm_2022.iti_27849_u2_equipo_04.DeleteDialog;
+
 public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callback,
 		GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
 	private DragAndDropThread thread;
+	DeleteDialog deleteDialog;
 	private ArrayList<Figure> figures;
 	private int currentIndex;
 	int id = 0;
 	private final GestureDetector gestureDetector;
 	private static final String TAG = "FSM_canvas";
 	private final Paint p;
+
 
 	public DragAndDropView(Context context) {
 		super(context);
@@ -37,6 +43,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 		this.p = new Paint();
+		this.deleteDialog = new DeleteDialog((Activity) context);
 	}
 
 	@Override
@@ -140,6 +147,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	@Override
 	public void onLongPress(MotionEvent motionEvent) {
 		Log.d(TAG, "On long press: called");
+		deleteDialog.show();
 //		arrows.add(new Arrow(id++, (int) motionEvent.getX(), (int) motionEvent.getY()));
 	}
 

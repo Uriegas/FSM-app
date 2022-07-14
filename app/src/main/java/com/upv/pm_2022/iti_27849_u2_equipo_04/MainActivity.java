@@ -6,9 +6,11 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -18,8 +20,12 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import com.upv.pm_2022.iti_27849_u2_equipo_04.DeleteDialog;
 
 /**
  * Features:
@@ -34,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     FrameLayout pantalla;
     RelativeLayout botones;
     Dialog dialog_export, dialog_menu;
+    DeleteDialog deleteDialog;
 
     private static final String TAG = "Main_Activity";
     private Bitmap bitmap;
@@ -49,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        deleteDialog = new DeleteDialog(this);
 
         vista = new DragAndDropView(this);
         pantalla = new FrameLayout(this);
@@ -118,7 +126,10 @@ public class MainActivity extends AppCompatActivity {
         expPNG.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Las acciones para exportar en PNG
+                Bitmap bitmap = Bitmap.createBitmap(vista.getWidth(), vista.getHeight(), Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                vista.draw(canvas);
+
             }
         });
 
