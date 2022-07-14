@@ -94,6 +94,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	// TODO: Move functionality from onTouchEvent to Gestures
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		Log.d(TAG, "Figure -> " + currentIndex);
 		gestureDetector.onTouchEvent(event);
 		int x = (int) event.getX(); int y = (int) event.getY();
 		switch(event.getAction()) {
@@ -101,16 +102,17 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 				getCurrentFigure(x,y);
 				break;
 			case MotionEvent.ACTION_MOVE:
-				if(currentIndex == -2) {
+				if(currentIndex == -2) { // Create new arrow if user clicked in the edge of a circle
 					Arrow arrow = new Arrow(id++, x, y);
 					figures.add(arrow);
 					currentIndex = arrow.onDown(x,y);
 				}
-				else if(currentIndex != -1)
-					if(figures.get(currentIndex) instanceof Arrow &&
-					   ((Arrow)figures.get(currentIndex)).isLocked)
+				else if(currentIndex != -1) { // If a circle is touched and not locked move it
+					if (figures.get(currentIndex) instanceof Arrow &&
+							((Arrow) figures.get(currentIndex)).isLocked)
 						break;
 					figures.get(currentIndex).onMove(x, y);
+				}
 				break;
 			case MotionEvent.ACTION_UP:
 				if(currentIndex != -1 && figures.get(currentIndex) instanceof Arrow)
