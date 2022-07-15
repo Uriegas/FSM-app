@@ -1,13 +1,300 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollView"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="100dp"
-        android:gravity="center"
-        android:text="Muestra del acerca de"></TextView>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="12dp"
+        android:gravity="center">
 
-</LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:text="* Nodo:">
+        </TextView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="18dp"
+                android:src="@drawable/ic_doble_click">
+            </ImageView>
+
+            <TextView
+                android:layout_width="230dp"
+                android:layout_height="65dp"
+                android:gravity="left"
+                android:padding="5dp"
+                android:text="Para crear un nuevo nodo, solo debes hacer doble click en la pantalla">
+            </TextView>
+        </LinearLayout>
+
+        <!-- Segundo Apartado-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="18dp"
+                android:src="@drawable/ic_swipe">
+            </ImageView>
+
+            <TextView
+                android:layout_width="230dp"
+                android:layout_height="65dp"
+                android:gravity="left"
+                android:padding="5dp"
+                android:text="Si deseas mover el nodo, solo deberás de dar click y arrastrarlo.">
+            </TextView>
+        </LinearLayout>
+
+        <!-- Tercer Apartado-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="18dp"
+                android:src="@drawable/ic_doble_nodo">
+            </ImageView>
+
+            <TextView
+                android:layout_width="230dp"
+                android:layout_height="65dp"
+                android:gravity="left"
+                android:padding="5dp"
+                android:text="Para cambiar el estado final del nodo, deberás de dar doble click sobre este.">
+            </TextView>
+        </LinearLayout>
+
+
+        <!-- Cuarto Apartado-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="18dp"
+                android:src="@drawable/ic_click_normal">
+            </ImageView>
+
+            <TextView
+                android:layout_width="230dp"
+                android:layout_height="65dp"
+                android:gravity="left"
+                android:padding="5dp"
+                android:text="Para borrar un nodo, solo deberás de presionarlo y esperar la confirmación">
+            </TextView>
+        </LinearLayout>
+
+        <!-- Quinto Apartado-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="20dp"
+                android:src="@drawable/ic_click">
+            </ImageView>
+
+            <TextView
+                android:layout_width="230dp"
+                android:layout_height="65dp"
+                android:gravity="left"
+                android:padding="5dp"
+                android:text="Si deseas editar el nombre de algun nodo, solo deberás de presionarlo.">
+            </TextView>
+        </LinearLayout>
+
+
+
+
+        <!-- 2/3 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:text="* Flecha:">
+        </TextView>
+
+        <!-- Primer Apartado-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="18dp"
+                android:src="@drawable/ic_borde_nodo">
+            </ImageView>
+
+            <TextView
+                android:layout_width="230dp"
+                android:layout_height="60dp"
+                android:gravity="left"
+                android:padding="5dp"
+                android:text=" Para crear una flecha, solo da click en el borde de cualquier nodo">
+            </TextView>
+        </LinearLayout>
+
+
+        <!-- Segundo Apartado-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="18dp"
+                android:src="@drawable/ic_flecha_doble">
+            </ImageView>
+
+            <TextView
+                android:layout_width="230dp"
+                android:layout_height="60dp"
+                android:gravity="left"
+                android:padding="5dp"
+                android:text="Para cambiar el sentido de la flecha, solo da doble click sobre esta misma.">
+            </TextView>
+        </LinearLayout>
+
+        <!-- Tercer Apartado-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="18dp"
+                android:src="@drawable/ic_flecha_normal">
+            </ImageView>
+
+            <TextView
+                android:layout_width="230dp"
+                android:layout_height="60dp"
+                android:gravity="left"
+                android:padding="5dp"
+                android:text="Para cambiar el nombre de la flecha, solo da un click sobre ella.">
+            </TextView>
+        </LinearLayout>
+
+        <!-- Cuarto Apartado-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="18dp"
+                android:src="@drawable/ic_flecha_presionando">
+            </ImageView>
+
+            <TextView
+                android:layout_width="230dp"
+                android:layout_height="60dp"
+                android:gravity="left"
+                android:padding="5dp"
+                android:text="Si deseas borrar alguna flecha, debes dar click sobre ella.">
+            </TextView>
+        </LinearLayout>
+
+
+
+
+        <!-- 3/3 -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            android:textStyle="bold"
+            android:text="* Extra:">
+        </TextView>
+
+        <!-- Primer Apartado-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="18dp"
+                android:src="@drawable/ic_escribir">
+            </ImageView>
+
+            <TextView
+                android:layout_width="230dp"
+                android:layout_height="65dp"
+                android:gravity="left"
+                android:padding="5dp"
+                android:text="Para escribir nombres de letras griegas, solo debes seguir el sig. ejemplo: \beta -> β">
+            </TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="35dp">
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
