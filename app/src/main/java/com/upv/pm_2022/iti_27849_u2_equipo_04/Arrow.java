@@ -7,6 +7,7 @@ import android.graphics.Path;
 
 public class Arrow extends Figure {
     // TODO: Arched arrow and Self Linked arrow
+    // TODO: Set snap padding for curved lines -> straight lines
     public int endX;
     public int endY;
     public boolean isLocked;
