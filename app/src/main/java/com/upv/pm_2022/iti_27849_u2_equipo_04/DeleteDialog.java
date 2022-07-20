@@ -21,6 +21,7 @@ public class DeleteDialog extends Dialog {
         this.activity = activity;
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -20,10 +20,12 @@ import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import com.upv.pm_2022.iti_27849_u2_equipo_04.DeleteDialog;
 
@@ -126,13 +128,16 @@ public class MainActivity extends AppCompatActivity {
         expPNG.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //convertirPgmImagen();
+
                 bitmap = viewToBitmap(vista);
                 File file = new File(Environment.getExternalStorageDirectory().toString() +
-                        '/' + FILE_NAME + ".jpg");
+                        '/' + FILE_NAME + ".png");
                 try {
                     file.delete(); file.createNewFile();
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(file));
-                    Toast.makeText(getBaseContext(), "jpg file exported into root folder",
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(file));
+                    Toast.makeText(getBaseContext(), "PNG file exported into root folder",
                             Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     Toast.makeText(getBaseContext(), "An error occurred", Toast.LENGTH_LONG).show();
@@ -156,15 +161,40 @@ public class MainActivity extends AppCompatActivity {
         //setContentView(new DragAndDropView(this));
     }
 
+    private void convertirPgmImagen(){
+        try {
+            FileOutputStream fileOutputStream = null;
+            File path = Environment.getExternalStorageDirectory();
+            String unico = UUID.randomUUID().toString();
+            File file = new File(path, unico + ".png");
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            fileOutputStream = new FileOutputStream(file);
+            Bitmap bitmap = Bitmap.createBitmap(vista.getWidth(), vista.getHeight(), Bitmap.Config.RGBA_F16); // viewToBitmap() ...
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+            fileOutputStream.flush();
+            fileOutputStream.close();
+        } catch (FileNotFoundException e) {
+            //
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Get the bitmap of the graph
      * @param view
      * @return the bitmap of the diagram
      */
     public Bitmap viewToBitmap(View view) {
-        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.RGBA_F16);
         canvas = new Canvas(bitmap);
-        view.draw(canvas);
+        //view.draw(canvas);
         return bitmap;
     }
 
