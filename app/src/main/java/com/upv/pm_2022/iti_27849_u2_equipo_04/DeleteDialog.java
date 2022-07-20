@@ -36,5 +36,4 @@ public class DeleteDialog extends Dialog {
                 dismiss()
         );
     }
-
 }

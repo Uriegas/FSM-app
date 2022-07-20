@@ -150,8 +150,10 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	}
 
 	@Override
-	public void onLongPress(MotionEvent motionEvent) {
+	public void onLongPress(MotionEvent event) {
 		Log.d(TAG, "On long press: called");
+		int x = (int) event.getX(); int y = (int) event.getY();
+		getCurrentFigure(x,y);
 		deleteDialog.show();
 //		arrows.add(new Arrow(id++, (int) motionEvent.getX(), (int) motionEvent.getY()));
 	}

@@ -126,14 +126,21 @@ public class MainActivity extends AppCompatActivity {
         expPNG.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bitmap bitmap = Bitmap.createBitmap(vista.getWidth(), vista.getHeight(), Bitmap.Config.ARGB_8888);
-                Canvas canvas = new Canvas(bitmap);
-                vista.draw(canvas);
+                bitmap = viewToBitmap(vista);
+                File file = new File(Environment.getExternalStorageDirectory().toString() +
+                        '/' + FILE_NAME + ".jpg");
+                try {
+                    file.delete(); file.createNewFile();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, new FileOutputStream(file));
+                    Toast.makeText(getBaseContext(), "jpg file exported into root folder",
+                            Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(getBaseContext(), "An error occurred", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
 
             }
         });
-
-//        canvas = new Canvas(bitmap);
         // want fullscreen, we hide Activity's title and notification bar
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -147,6 +154,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(pantalla);
 
         //setContentView(new DragAndDropView(this));
+    }
+
+    /**
+     * Get the bitmap of the graph
+     * @param view
+     * @return the bitmap of the diagram
+     */
+    public Bitmap viewToBitmap(View view) {
+        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
+        canvas = new Canvas(bitmap);
+        view.draw(canvas);
+        return bitmap;
     }
 
     /**
