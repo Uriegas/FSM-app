@@ -6,20 +6,31 @@
 
 package com.upv.pm_2022.iti_27849_u2_equipo_04;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.os.Build;
+import android.os.Environment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+
+import androidx.annotation.RequiresApi;
 
 import com.upv.pm_2022.iti_27849_u2_equipo_04.DeleteDialog;
 
@@ -93,6 +104,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	}
 
 	// TODO: Move functionality from onTouchEvent to Gestures
+	@RequiresApi(api = Build.VERSION_CODES.O)
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		Log.d(TAG, "Figure -> " + currentIndex);
@@ -284,4 +296,57 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 			}
 		}
 	}
+	/*
+
+	@RequiresApi(api = Build.VERSION_CODES.O)
+	Bitmap save(View v) {
+		Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.RGBA_F16);
+		Canvas c = new Canvas(b);
+		v.draw(c);
+		return b;
+	}
+
+	@RequiresApi(api = Build.VERSION_CODES.O)
+	public Bitmap loadBitmapFromView(View v) {
+		DisplayMetrics dm = getResources().getDisplayMetrics();
+		v.measure(View.MeasureSpec.makeMeasureSpec(dm.widthPixels, View.MeasureSpec.EXACTLY),
+				View.MeasureSpec.makeMeasureSpec(dm.heightPixels, View.MeasureSpec.EXACTLY));
+		v.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
+		Bitmap returnedBitmap = Bitmap.createBitmap(v.getMeasuredWidth(),
+				v.getMeasuredHeight(), Bitmap.Config.RGBA_F16);
+		Canvas c = new Canvas(returnedBitmap);
+		v.draw(c);
+
+		return returnedBitmap;
+	}
+
+
+	@RequiresApi(api = Build.VERSION_CODES.O)
+	public void bitmapToImage(){
+		Bitmap bitmap = save(this);
+		try {
+			FileOutputStream fileOutputStream = null;
+			File path = Environment.getExternalStorageDirectory();
+			String unico = UUID.randomUUID().toString();
+			File file = new File(path, unico + ".png");
+			if (file.exists())
+				file.delete();
+			if (!file.exists()) {
+				try {
+					file.createNewFile();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			fileOutputStream = new FileOutputStream(file);
+			bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+			fileOutputStream.flush();
+			fileOutputStream.close();
+			System.out.println(file.getAbsolutePath());
+		} catch (IOException e) {
+			//
+		}
+	}
+
+	 */
 }

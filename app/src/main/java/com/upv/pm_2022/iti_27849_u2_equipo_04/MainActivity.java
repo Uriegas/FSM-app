@@ -1,33 +1,47 @@
 package com.upv.pm_2022.iti_27849_u2_equipo_04;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
+import android.view.PixelCopy;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
-
-import com.upv.pm_2022.iti_27849_u2_equipo_04.DeleteDialog;
 
 /**
  * Features:
@@ -43,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
     RelativeLayout botones;
     Dialog dialog_export, dialog_menu;
     DeleteDialog deleteDialog;
-
     private static final String TAG = "Main_Activity";
     private Bitmap bitmap;
     private Canvas canvas;
@@ -126,12 +139,15 @@ public class MainActivity extends AppCompatActivity {
 
         //Listener para PNG
         expPNG.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
 
-                //convertirPgmImagen();
 
-                bitmap = viewToBitmap(vista);
+                getSaveImageFilePath();
+                //vista.bitmapToImage();
+                bitmap = save(vista);
+
                 File file = new File(Environment.getExternalStorageDirectory().toString() +
                         '/' + FILE_NAME + ".png");
                 try {
@@ -143,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getBaseContext(), "An error occurred", Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 }
+
 
             }
         });
@@ -161,41 +178,60 @@ public class MainActivity extends AppCompatActivity {
         //setContentView(new DragAndDropView(this));
     }
 
-    private void convertirPgmImagen(){
-        try {
-            FileOutputStream fileOutputStream = null;
-            File path = Environment.getExternalStorageDirectory();
-            String unico = UUID.randomUUID().toString();
-            File file = new File(path, unico + ".png");
-            if (!file.exists()) {
-                try {
-                    file.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            fileOutputStream = new FileOutputStream(file);
-            Bitmap bitmap = Bitmap.createBitmap(vista.getWidth(), vista.getHeight(), Bitmap.Config.RGBA_F16); // viewToBitmap() ...
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
-            fileOutputStream.flush();
-            fileOutputStream.close();
-        } catch (FileNotFoundException e) {
-            //
-        } catch (IOException e) {
-            e.printStackTrace();
+    String getSaveImageFilePath() {
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageName = "IMG_" + timeStamp + ".jpg";
+
+        String selectedOutputPath = Environment.getExternalStorageDirectory() + File.separator + imageName;
+//        Log.d(FILE_NAME, "selected camera path " + selectedOutputPath);
+
+        vista.setDrawingCacheEnabled(true);
+        vista.buildDrawingCache();
+        Bitmap bitmap = Bitmap.createBitmap(vista.getDrawingCache());
+
+        int maxSize = 1080;
+
+        int bWidth = bitmap.getWidth();
+        int bHeight = bitmap.getHeight();
+
+        if (bWidth > bHeight) {
+            int imageHeight = (int) Math.abs(maxSize * ((float)bitmap.getWidth() / (float) bitmap.getHeight()));
+            bitmap = Bitmap.createScaledBitmap(bitmap, maxSize, imageHeight, true);
+        } else {
+            int imageWidth = (int) Math.abs(maxSize * ((float)bitmap.getWidth() / (float) bitmap.getHeight()));
+            bitmap = Bitmap.createScaledBitmap(bitmap, imageWidth, maxSize, true);
         }
+        vista.setDrawingCacheEnabled(false);
+        vista.destroyDrawingCache();
+
+        OutputStream fOut = null;
+        try {
+            File file = new File(selectedOutputPath);
+            fOut = new FileOutputStream(file);
+
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+            fOut.flush();
+            fOut.close();
+            Toast.makeText(getBaseContext(), "JPEG file exported into root folder",
+                    Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getBaseContext(), "An error occurred", Toast.LENGTH_LONG).show();
+        }
+        return selectedOutputPath;
     }
 
-    /**
-     * Get the bitmap of the graph
-     * @param view
-     * @return the bitmap of the diagram
-     */
-    public Bitmap viewToBitmap(View view) {
-        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.RGBA_F16);
-        canvas = new Canvas(bitmap);
-        //view.draw(canvas);
-        return bitmap;
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    Bitmap save(View v) {
+        v.getDrawingCache();
+        v.buildDrawingCache();
+        Bitmap b = Bitmap.createBitmap(v.getDrawingCache());
+        v.setDrawingCacheEnabled(false);
+        Canvas c = new Canvas(b);
+        v.draw(c);
+        return b;
     }
 
     /**
