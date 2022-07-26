@@ -225,6 +225,7 @@ public class MainActivity extends AppCompatActivity {
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     Bitmap save(View v) {
+        v.setDrawingCacheEnabled(true);
         v.getDrawingCache();
         v.buildDrawingCache();
         Bitmap b = Bitmap.createBitmap(v.getDrawingCache());
