@@ -39,7 +39,7 @@
             android:layout_weight="2"
             android:background="#00FFFFFF"
             android:backgroundTint="#00FFFFFF"
-            android:text="Cancel"
+            android:text="Cancelar"
             android:textColor="#9A9A9A" />
 
         <Button
@@ -49,7 +49,7 @@
             android:layout_weight="2"
             android:background="#43A047"
             android:backgroundTint="#43A047"
-            android:text="Save"
+            android:text="Sí"
             android:textColor="#ffffff"
             app:cornerRadius="30dp"
             tools:ignore="TextContrastCheck" />
