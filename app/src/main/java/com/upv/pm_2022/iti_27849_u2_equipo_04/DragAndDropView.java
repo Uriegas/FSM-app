@@ -118,8 +118,12 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 				}
 				break;
 			case MotionEvent.ACTION_UP:
-				if(currentIndex > -1 && figures.get(currentIndex) instanceof Arrow)
+				if(currentIndex > -1 && figures.get(currentIndex) instanceof Arrow) {// Crete arrow
+					// TODO: Create new Arrow which is linked to 2 nodes
+//					targetNode = getCurrentFigure(x, y);
+//					figures.add(new Arrow(originalNode, targetNode));
 					((Arrow)figures.get(currentIndex)).isLocked = true;
+				}
 				currentIndex = -1;
 				break;
 		}
@@ -185,10 +189,9 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		int x = (int) motionEvent.getX(); int y = (int) motionEvent.getY();
 		getCurrentFigure(x,y);
 
-		if(currentIndex > -1 && figures.get(currentIndex) instanceof State) {
-			// Open Keyboard
+		if(currentIndex > -1) {
 			requestFocus();
-			((State)figures.get(currentIndex)).isEdited(true);
+			(figures.get(currentIndex)).isEdited(true);
 			InputMethodManager imm = (InputMethodManager) getContext()
 					.getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.showSoftInput(this, InputMethodManager.SHOW_FORCED);
@@ -206,20 +209,20 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		Log.d(TAG, "Key Up " + (char) event.getUnicodeChar() + " pressed");
 		//TODO: It makes sense having this code @onKeyDown() since that supports hardware keyboards
-		if(currentIndex != -1 && figures.get(currentIndex) instanceof State) {
-			State state = (State)figures.get(currentIndex);
-			if (keyCode==KeyEvent.KEYCODE_DEL && state.name.length()>0)
-				 state.name = state.name.substring(0, state.name.length()-1);
+		if(currentIndex != -1) {
+			Figure figure = figures.get(currentIndex);
+			if (keyCode==KeyEvent.KEYCODE_DEL && figure.name.length()>0)
+				 figure.name = figure.name.substring(0, figure.name.length()-1);
 			else if(keyCode == KeyEvent.KEYCODE_ENTER) {
 				clearFocus();
-				state.isEdited(false);
+				figure.isEdited(false);
 				InputMethodManager imm = (InputMethodManager) getContext()
 						.getSystemService(Context.INPUT_METHOD_SERVICE);
 				imm.hideSoftInputFromWindow(getWindowToken(), 0);
 			}
 			else
-				((State)figures.get(currentIndex)).name += (char) event.getUnicodeChar();
-			Log.d(TAG, "State name changed to " + state.name);
+				figures.get(currentIndex).name += (char) event.getUnicodeChar();
+			Log.d(TAG, "Figure name changed to " + figure.name);
 		}
 		return false;
 	}

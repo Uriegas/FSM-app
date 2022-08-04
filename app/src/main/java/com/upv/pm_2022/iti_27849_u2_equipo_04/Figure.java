@@ -7,12 +7,16 @@
 package com.upv.pm_2022.iti_27849_u2_equipo_04;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 
 public abstract class Figure {
 	protected int id;
 	protected int x;
 	protected int y;
 	protected boolean flag;
+	protected final Paint paint = new Paint();
+	public String name;
 
 	// Variables for toLatex implementations
 	protected final static String DRAW_COMMAND	= "\\draw";
@@ -28,5 +32,10 @@ public abstract class Figure {
 	public void setFlag() { this.flag = !this.flag; }
 	public int getX(){return this.x;}
 	public int getY(){return this.y;}
+	/**
+	 * Set color of the circle if it is being edited
+	 * @param isEdited true if the name of this object is being edited
+	 */
+	public void isEdited(boolean isEdited){paint.setColor(isEdited ? Color.BLUE : Color.BLACK);}
 	public abstract String toLatex(float resize_factor);
 }

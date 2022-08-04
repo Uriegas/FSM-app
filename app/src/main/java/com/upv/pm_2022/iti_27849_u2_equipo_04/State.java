@@ -9,8 +9,6 @@ import android.graphics.Typeface;
  * A state of the FSM. Fixed size
  */
 public class State extends Figure {
-    public String name;
-    private final Paint paint = new Paint();
     public static final int r = 81;
     public static final float ratio_percentage  = (float)0.35;
     public static final float final_ratio       = (float)0.2;
@@ -61,23 +59,24 @@ public class State extends Figure {
     }
 
     /**
+     * Check if the click is inside the circle; similar to {@link #onDown}
+     * @param touchX x touched
+     * @param touchY y touched
+     * @return if coordinates are inside circle return this id, -1 otherwise
+     */
+    public int onCircle(int touchX, int touchY) {
+        if ( ((x-touchX) * (x-touchX)) + ((y-touchY) * (y-touchY)) < (r*r))
+            return this.id;
+        return -1;
+    }
+
+    /**
      * Change the position of the figure
      * @param touchX x touched
      * @param touchY y touched
      */
     public void onMove(int touchX, int touchY) {
         this.x = touchX; this.y = touchY;
-    }
-
-    /**
-     * Set color of the circle if it is being edited
-     * @param isEdited true if the name of this object is being edited
-     */
-    public void isEdited(boolean isEdited) {
-        if(isEdited)
-            paint.setColor(Color.BLUE);
-        else
-            paint.setColor(Color.BLACK);
     }
 
     /**

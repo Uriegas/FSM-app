@@ -4,29 +4,42 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Typeface;
 
 public class Arrow extends Figure {
     // TODO: Arched arrow and Self Linked arrow
     // TODO: Set snap padding for curved lines -> straight lines
     public int endX;
     public int endY;
+    private final int fontSize = 38;
     public boolean isLocked;
-    private final Paint paint = new Paint();
     private final Paint p_fill= new Paint();
     // TODO: Same tolerance for width of the arrow head (triangle)
     private final static int tolerance = 20;
+    private float textX, textY;
 
-    public Arrow(int id, int x, int y) {
+    public Arrow(int id, int x, int y, String name) {
         this.id=id; this.x=x; this.y=y; this.flag = false; // Flag used to change direction of arrow
         this.endX = x; this.endY = y;
-        this.isLocked = false;
+        this.name = name; this.isLocked = false;
+        this.textX = (float)(this.x+this.endX)/2; textY = (float)(this.y+this.endY)/2;
         paint.setAntiAlias(true);
+        // Arrow line
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(2.5f);
+        // Arrow head
         p_fill.setStyle(Paint.Style.FILL);
         p_fill.setColor(Color.BLACK);
         p_fill.setStrokeWidth(2.5f);
+        // Arrow name
+        paint.setTextSize(fontSize);
+        paint.setTextAlign(Paint.Align.CENTER);
+        paint.setTypeface(Typeface.SANS_SERIF);
+    }
+
+    public Arrow(int id, int x, int y) {
+        this(id, x, y, "a_"+id);
     }
 
     public void draw(Canvas canvas){
@@ -35,6 +48,8 @@ public class Arrow extends Figure {
         path.moveTo(this.endX, this.endY);
         path.lineTo(this.x, this.y);
         canvas.drawPath(path, paint);
+        // Draw name of the arrow (centered, not considering arch yet)
+        drawName(canvas, this.x, this.y, this.endX, this.endY);
         // Draw Head of the Arrow (triangle) - Get the angle
         drawArrowHead(canvas, this.endX, this.endY, Math.atan2(this.endY-this.y, this.endX-this.x));
     }
@@ -103,6 +118,30 @@ public class Arrow extends Figure {
         canvas.drawPath(path, p_fill);
     }
 
+    private void drawName(Canvas canvas, int x_1, int y_1, int x_2, int y_2) {
+        // TODO: Fine tune this
+        float width = this.name.length()*fontSize;
+        textX = (float)(x_1+x_2)/2; textY = (float)(y_1+y_2)/2;
+        double textAngle = Math.atan2(x_2-x_1, y_1-y_2);
+        double cos = Math.cos(textAngle), sin = Math.sin(textAngle);
+        double cornerX = (width/2 + 5)*(cos > 0 ? 1 : -1), cornerY = (fontSize)*(sin > 0 ? 1 : -1);
+        double slide = sin * Math.pow(Math.abs(sin), 40) * cornerX - cos *
+                Math.pow(Math.abs(cos), 15) * cornerY;
+        textX += cornerX - sin * slide;
+        textY += cornerY + cos * slide;
+        canvas.drawText(name, textX, textY, paint);
+    }
+
+    /**
+     * Override isEdited method to include coloring of arrow head (triangle) when isEdited is set
+     * @param isEdited true if the name of this object is being edited
+     */
+    @Override
+    public void isEdited(boolean isEdited) {
+        super.isEdited(isEdited);
+        p_fill.setColor(isEdited ? Color.BLUE : Color.BLACK);
+    }
+
     /**
      * Converts this arrow to its latex representation.
      * @param resize_factor factor to resize the coordinates
@@ -111,6 +150,7 @@ public class Arrow extends Figure {
     public String toLatex(float resize_factor) {
         float x = getX()*resize_factor, y = getY()*resize_factor, x_1, y_1, x_2, y_2;
         float endX = this.endX*resize_factor, endY = this.endY*resize_factor;
+        float textX = this.textX*resize_factor, textY = this.textY*resize_factor;
         double alpha = Math.atan2(endY-y, endX-x);
         double dx = Math.cos(alpha);
         double dy = Math.sin(alpha);
@@ -121,11 +161,14 @@ public class Arrow extends Figure {
 
         String latex_output = "";
         // Draw arrow
-        latex_output += DRAW_COMMAND + COLOR + " (" + x + ", -" + y + ") --" +
+        latex_output += DRAW_COMMAND + ' ' + COLOR + " (" + x + ", -" + y + ") --" +
                         " (" + endX + ", -" + endY + ");\n";
         // Draw arrow head (triangle)
-        latex_output += FILL_COMMAND + COLOR + " (" + endX + ", -" + endY + ") -- (" +
+        latex_output += FILL_COMMAND + ' ' + COLOR + " (" + endX + ", -" + endY + ") -- (" +
                         x_1 + ", -" + y_1 + ") -- (" + x_2 + ", -" + y_2 + ");\n";
+        if(!this.name.isEmpty()) // Draw name
+            latex_output += DRAW_COMMAND + ' ' + COLOR + " (" + textX + ", -" + textY + ") " +
+                    "node" + " {$" + this.name + "$};\n";
         return latex_output;
     }
 }
