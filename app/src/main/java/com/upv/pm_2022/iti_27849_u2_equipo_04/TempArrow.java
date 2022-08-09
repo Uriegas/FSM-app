@@ -8,10 +8,21 @@ public class TempArrow extends FinalArrow {
         this.textX = (float)(from_node.x+to_x)/2; this.textY = (float)(from_node.y+to_y);
     }
 
+    /**
+     * Get the middle point between the node and the touched point, then get the closest points for
+     * the node, finally graph this as the start of the arrow along with the touched point
+     * @param canvas canvas to draw in
+     */
     @Override
     public void draw(Canvas canvas) {
         State from = nodes.get(0);
-        draw(canvas, from.x, from.y, this.x, this.y);
+        // Get middle point between the node and the touched point
+        int midX = (from.x + this.x)/2;
+        int midY = (from.y + this.y)/2;
+        // Get the closest point to the node
+        State tmp = from.getClosestPoint(midX, midY);
+        int x_1 = tmp.x, y_1 = tmp.y; // Dummy assign
+        draw(canvas, x_1, y_1, this.x, this.y);
     }
 
     @Override
