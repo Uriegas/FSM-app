@@ -9,7 +9,7 @@ import android.graphics.Typeface;
  * A state of the FSM. Fixed size
  */
 public class State extends Figure {
-    public static final int r = 81;
+    public float r = 81;
     public static final float ratio_percentage  = (float)0.35;
     public static final float final_ratio       = (float)0.2;
 
@@ -23,6 +23,8 @@ public class State extends Figure {
         paint.setTextAlign(Paint.Align.CENTER);
         paint.setTypeface(Typeface.SANS_SERIF);
     }
+
+    public State(int id, int x, int y, float r) { this(id, x, y); this.r = r; }
 
     public State(int id, int x, int y) { this(id, x, y, false); }
 
@@ -101,13 +103,13 @@ public class State extends Figure {
         String latex_output = "";
         // Draw circle
         latex_output += DRAW_COMMAND + ' ' + COLOR + " (" + x + ", -" + y + ") circle (" +
-                        (State.r/CONVERSION_RATIO) + ");\n";
+                        (this.r/CONVERSION_RATIO) + ");\n";
         if(!this.name.isEmpty()) // Draw name
             latex_output += DRAW_COMMAND + ' ' + COLOR + " (" + x + ", -" + y + ") " + "node" +
                             " {$" + this.name + "$};\n";
         if(this.flag) // Draw inner circle (final state)
             latex_output += DRAW_COMMAND + ' ' + COLOR + " (" + x + ", -" + y + ") circle (" +
-                            ((State.r*(1-State.final_ratio))/CONVERSION_RATIO) + ");\n";
+                            ((this.r*(1-State.final_ratio))/CONVERSION_RATIO) + ");\n";
         return latex_output;
     }
 }

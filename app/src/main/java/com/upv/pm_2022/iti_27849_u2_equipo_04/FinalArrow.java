@@ -16,7 +16,6 @@ import java.util.ArrayList;
  * Every class that extends this class should set textX and textY
  */
 public abstract class FinalArrow extends Figure {
-    // TODO: Arched arrow and Self Linked arrow
     // TODO: Set snap padding for curved lines -> straight lines
     protected final int fontSize = 38;
     private final Paint p_fill= new Paint();
@@ -56,8 +55,6 @@ public abstract class FinalArrow extends Figure {
     /**
      * Abstract method to draw a line
      * TODO: This function only draws straight lines; support curved lines
-     * TODO: Draw circle between 2 circles not a line
-     *       Get idea from link.js#35
      * @param canvas canvas to draw in
      * @param x_1 start point in x
      * @param y_1 start point in y
@@ -68,13 +65,17 @@ public abstract class FinalArrow extends Figure {
         //canvas.drawArc(this.x, this.y,this.x+200,this.y+200,(float)100,(float)10,false,paint);
         // Draw arrow
         Path path = new Path();
-        path.moveTo(x_2, y_2);
-        path.lineTo(x_1, y_1);
+
+        // Arched line
+//        RectF oval = new RectF(x_1, y_1, x_2, y_2);
+//        path.arcTo(oval, 45, 128);
+
+        // Straight line
+        path.moveTo(x_1, y_1); // No needed since arcTo execs moveTo when path is empty
+        path.lineTo(x_2, y_2);
+
         canvas.drawPath(path, paint);
-//        float startAngle = (float) (Math.PI*0.8), endAngle = (float)(-Math.PI*0.8);
-//        RectF oval = new RectF(node.x-State.r, node.y+State.r,
-//                node.x+State.r, node.y-State.r);
-//        canvas.drawArc(oval, startAngle, endAngle, true, paint);
+
         // Draw name of the arrow (centered, not considering arch yet)
         drawName(canvas, x_1, y_1, x_2, y_2);
         // Draw Head of the Arrow (triangle) - Get the angle
@@ -204,5 +205,39 @@ public abstract class FinalArrow extends Figure {
             latex_output += DRAW_COMMAND + ' ' + COLOR + " (" + textX + ", -" + textY + ") " +
                     "node" + " {$" + this.name + "$};\n";
         return latex_output;
+    }
+
+    /**
+     * Creates a circle from 3 points, using matrices is faster than the traditional
+     * circumscribed circle in a polygon.
+     * @see <a href="https://web.archive.org/web/20161011113446/http://www.abecedarical.com/zenosamples/zs_circle3pts.html">
+     *     Center and Radius of a Circle from Three Points
+     * </a>
+     * @param x_1 first point, x coordinate
+     * @param y_1 first point, y coordinate
+     * @param x_2 second point, x coordinate
+     * @param y_2 second point, y coordinate
+     * @param x_3 third point, x coordinate
+     * @param y_3 third point, y coordinate
+     * @return a circle from the three points
+     */
+    private State circleFromThreePoints(int x_1, int y_1, int x_2, int y_2, int x_3, int y_3) {
+        float a  = det(x_1, y_1, 1, x_2, y_2, 1, x_3, y_3, 1);
+        float bx = -det(x_1*x_1 + y_1*y_1, y_1, 1, x_2*x_2 + y_2*y_2, y_2, 1,
+                        x_3*x_3 + y_3*y_3, y_3, 1);
+        float by =  det(x_1*x_1 + y_1*y_1, x_1, 1, x_2*x_2 + y_2*y_2, x_2, 1,
+                        x_3*x_3 + y_3*y_3, x_3, 1);
+        float c  = -det(x_1*x_1 + y_1*y_1, x_1, y_1, x_2*x_2 + y_2*y_2, x_2, y_2,
+                        x_3*x_3 + y_3*y_3, x_3, y_3);
+        return new State(Integer.MAX_VALUE,  (int) (-bx / (2*a)), (int) (-by / (2*a)),
+                         (float) (Math.sqrt(bx*bx + by*by - 4*a*c) / (2*Math.abs(a))));
+    }
+
+    /**
+     * Get the determinant for the given matrix
+     * @return the determinant
+     */
+    private float det(int a, int b, int c, int d, int e, int f, int g, int h, int i) {
+        return a*e*i + b*f*g + c*d*h - a*f*h - b*d*i - c*e*g;
     }
 }
