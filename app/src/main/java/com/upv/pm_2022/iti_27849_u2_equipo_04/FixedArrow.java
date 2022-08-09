@@ -8,10 +8,22 @@ public class FixedArrow extends FinalArrow {
         this.textX = (float)(from.x+to.x)/2; this.textY = (float)(from.y+to.y);
     }
 
+    /**
+     * Get the middle point between the 2 nodes, then get the closest points for the 2 circles,
+     * finally graph this 2 as the start and end of the arrow
+     * @param canvas canvas to draw in
+     */
     @Override
     public void draw(Canvas canvas) {
         State from = nodes.get(0); State to = nodes.get(1);
-        draw(canvas, from.x, from.y, to.x, to.y);
+        // Get middle point between the 2 nodes
+        int midX = (from.x + to.x)/2;
+        int midY = (from.y + to.y)/2;
+        // Get the 2 nodes representing the closest points
+        State tmp_1 = from.getClosestPoint(midX, midY);
+        State tmp_2 = to.getClosestPoint(midX, midY);
+        int x_1 = tmp_1.x, y_1 = tmp_1.y, x_2 = tmp_2.x, y_2 = tmp_2.y; // Dummy assign
+        draw(canvas, x_1, y_1, x_2, y_2);
     }
 
     @Override
