@@ -41,20 +41,19 @@ public class State extends Figure {
      *         -1 means no object selected,
      *         -2 means create a new line
      */
-    public int onDown(int touchX, int touchY) {
+    public Tuple onDown(int touchX, int touchY) {
         // Pythagorean theorem in circle: x^2 + y^2 = r^2, if touched is (x_1, y_1) then
         // the square of the distance from the center to the touched point should be less than r^2:
         // (x-x_1)^2 + (y-y_1)^2 < r^2
         if (    ((x-touchX) * (x-touchX)) + ((y-touchY) * (y-touchY)) <
                 (r*r*(1.1-ratio_percentage)*(1.1-ratio_percentage)) )
-            return this.id;
+            return new Tuple(this.id);
         else if( (r*r*(1-ratio_percentage)*(1-ratio_percentage)) < //Clicked on edge of the circle
                  ((x-touchX) * (x-touchX)) + ((y-touchY) * (y-touchY)) &&
                  ((x-touchX) * (x-touchX)) + ((y-touchY) * (y-touchY)) <
                  (r*r*(1+ratio_percentage)*(1+ratio_percentage)) )
-            return -2;
-//            return Tuple(this.id, true);
-        return -1;
+            return new Tuple(this.id, true); // <- This is why a tuple is used
+        return new Tuple(-1);
     }
 
     /**

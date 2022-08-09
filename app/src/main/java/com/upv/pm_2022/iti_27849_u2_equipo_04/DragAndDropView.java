@@ -1,39 +1,26 @@
-/*
- * Author: Meta @ vidasconcurrentes
- * Related to: http://vidasconcurrentes.blogspot.com/2011/06/detectando-drag-drop-en-un-canvas-de.html
- * Edited by Andrea Charles, Eduardo Uriegas
- */
-
 package com.upv.pm_2022.iti_27849_u2_equipo_04;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.UUID;
-
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
-import android.os.Environment;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-
 import androidx.annotation.RequiresApi;
 
-import com.upv.pm_2022.iti_27849_u2_equipo_04.DeleteDialog;
-
+/**
+ * Author: Meta @ vidasconcurrentes
+ * Related to: http://vidasconcurrentes.blogspot.com/2011/06/detectando-drag-drop-en-un-canvas-de.html
+ * Edited by Andrea Charles, Eduardo Uriegas
+ */
 public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callback,
 		GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
@@ -41,6 +28,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	DeleteDialog deleteDialog;
 	private ArrayList<Figure> figures;
 	private int currentIndex;
+	private boolean requestedLink;
 	int id = 0;
 	private final GestureDetector gestureDetector;
 	private static final String TAG = "FSM_canvas";
@@ -56,6 +44,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		setFocusableInTouchMode(true);
 		this.p = new Paint();
 		this.deleteDialog = new DeleteDialog((Activity) context);
+		this.requestedLink = false;
 	}
 
 	@Override
@@ -115,10 +104,12 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 				getCurrentFigure(x,y);
 				break;
 			case MotionEvent.ACTION_MOVE:
-				if(currentIndex == -2) { // Create new arrow if user clicked in the edge of a circle
-					Arrow arrow = new Arrow(id++, x, y);
+				if(requestedLink) { // Create new arrow if user clicked in the edge of a circle
+					requestedLink = false;
+					State from = (State)figures.get(0);
+					TempArrow arrow = new TempArrow(id++, from, x, y);
 					figures.add(arrow);
-					currentIndex = arrow.onDown(x,y);
+					currentIndex = arrow.onDown(x,y).node_id;
 				}
 				else if(currentIndex > -1) { // If a circle is touched and not locked move it
 					if (figures.get(currentIndex) instanceof Arrow &&
@@ -136,6 +127,11 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 //					figures.add(new Arrow(originalNode, targetNode));
 					((Arrow)figures.get(currentIndex)).isLocked = true;
 				}
+//				if(currentIndex>-1 && figures.get(currentIndex) instanceof TempArrow) {//Crete arrow
+//					State from = ((TempArrow) figures.get(currentIndex)).from;
+//					State to = new State();
+//					figures.set(currentIndex, new Arrow(from, to));
+//				}
 				currentIndex = -1;
 				break;
 		}
@@ -176,6 +172,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 
 	/**
 	 * When an arrow is created it will be locked, thus it can not be redrawn
+	 * TODO: I don't remember what this code does
 	 * @param motionEvent event
 	 * @param motionEvent1 new event
 	 * @param v position v
@@ -270,15 +267,16 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	 * <p>
 	 * This method sets the attribute currentIndex, there is no need to set it outside
 	 * <p>
-	 * TODO: Handle case of clicking an arrow
 	 * @param x position in the x-axis
 	 * @param y position in the y-axis
 	 * @return id of the current State
 	 */
 	private int getCurrentFigure(int x, int y) {
 		for(Figure figure : figures)
-			if(currentIndex == -1)
-				currentIndex = figure.onDown(x, y);
+			if(currentIndex == -1) {
+				requestedLink = figure.onDown(x, y).requestedLink;
+				currentIndex  = figure.onDown(x, y).node_id;
+			}
 		return currentIndex;
 	}
 

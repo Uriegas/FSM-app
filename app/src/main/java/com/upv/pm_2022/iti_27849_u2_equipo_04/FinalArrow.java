@@ -93,7 +93,7 @@ public abstract class FinalArrow extends Figure {
      * @param b_y end point in y
      * @return object id if the distance AB_E is less than the tolerance parameter, -1 otherwise
      */
-    protected int onDown(int e_x, int e_y, int a_x, int a_y, int b_x, int b_y) {
+    protected Tuple onDown(int e_x, int e_y, int a_x, int a_y, int b_x, int b_y) {
         // Find distance from point E to line segment (AB)
         double d; // Distance between point E (touchX, touchY) and line segment AB (this arrow)
 
@@ -113,8 +113,8 @@ public abstract class FinalArrow extends Figure {
                     /Math.sqrt(Math.pow(b_x-a_x, 2) + Math.pow(b_y-a_y, 2));
 
         if(d < tolerance || Double.isNaN(d)) // We also consider the case: E inside line segment AB
-            return this.id;
-        return -1;
+            return new Tuple(this.id);
+        return new Tuple(-1);
     }
 
     /**

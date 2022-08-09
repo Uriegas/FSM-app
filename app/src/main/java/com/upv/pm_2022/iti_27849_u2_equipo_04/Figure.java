@@ -29,7 +29,7 @@ public abstract class Figure {
 	protected final static int CONVERSION_RATIO 	= 27;
 
 	public abstract void draw(Canvas canvas);
-	public abstract int onDown(int touchX, int touchY);
+	public abstract Tuple onDown(int touchX, int touchY);
 	public abstract void onMove(int touchX, int touchY);
 	public void setFlag() { this.flag = !this.flag; }
 	public int getX(){return this.x;}

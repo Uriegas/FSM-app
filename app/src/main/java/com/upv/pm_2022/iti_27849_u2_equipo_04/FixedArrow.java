@@ -15,7 +15,7 @@ public class FixedArrow extends FinalArrow {
     }
 
     @Override
-    public int onDown(int touchX, int touchY) {
+    public Tuple onDown(int touchX, int touchY) {
         State from = nodes.get(0); State to = nodes.get(1);
         return onDown(touchX, touchY, from.x, from.y, to.x, to.y);
     }

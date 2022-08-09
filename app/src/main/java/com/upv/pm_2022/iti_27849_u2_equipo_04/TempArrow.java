@@ -15,7 +15,7 @@ public class TempArrow extends FinalArrow {
     }
 
     @Override
-    public int onDown(int touchX, int touchY) {
+    public Tuple onDown(int touchX, int touchY) {
         State from = nodes.get(0);
         return onDown(touchX, touchY, from.x, from.y, this.x, this.y);
     }

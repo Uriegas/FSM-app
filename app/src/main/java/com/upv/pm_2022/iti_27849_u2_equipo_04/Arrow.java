@@ -57,7 +57,7 @@ public class Arrow extends Figure {
      * @param touchY touched point in y
      * @return object id if the distance AB_E is less than the tolerance parameter, -1 otherwise
      */
-    public int onDown(int touchX, int touchY){
+    public Tuple onDown(int touchX, int touchY){
         // Find distance from point E to line segment (AB)
         double d; // Distance between point E (touchX, touchY) and line segment AB (this arrow)
         int a_x = this.x, a_y = this.y, b_x = this.endX, b_y = this.endY, e_x = touchX, e_y =touchY;
@@ -78,8 +78,8 @@ public class Arrow extends Figure {
                 /Math.sqrt(Math.pow(b_x-a_x, 2) + Math.pow(b_y-a_y, 2));
 
         if(d < tolerance || Double.isNaN(d)) // We also consider the case: E inside line segment AB
-            return this.id;
-        return -1;
+            return new Tuple(this.id);
+        return new Tuple(-1);
     }
 
     public void onMove(int touchX, int touchY){ this.endX = touchX; this.endY = touchY; }

@@ -18,7 +18,7 @@ public class SelfArrow extends FinalArrow {
     }
 
     @Override
-    public int onDown(int touchX, int touchY) {
+    public Tuple onDown(int touchX, int touchY) {
         State node = nodes.get(0);
         return onDown(touchX, touchY, node.x, node.y, node.x, node.y);
     }
