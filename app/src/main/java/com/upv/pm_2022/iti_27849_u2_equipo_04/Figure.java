@@ -18,17 +18,19 @@ public abstract class Figure {
 	protected final Paint paint = new Paint();
 	public String name;
 
+	protected Figure(int id, int x, int y, String prefix) {
+		this.id = id; this.x = x; this.y = y; this.name = prefix + id;
+	}
+
 	// Variables for toLatex implementations
 	protected final static String DRAW_COMMAND	= "\\draw";
 	protected final static String FILL_COMMAND 	= "\\fill";
 	protected final static String COLOR       	= "[black]";
 	protected final static int CONVERSION_RATIO 	= 27;
 
-	public void draw(Canvas canvas){ }
-	public int onDown(int touchX, int touchY){
-		return this.id;
-	}
-	public void onMove(int touchX, int touchY){ }
+	public abstract void draw(Canvas canvas);
+	public abstract int onDown(int touchX, int touchY);
+	public abstract void onMove(int touchX, int touchY);
 	public void setFlag() { this.flag = !this.flag; }
 	public int getX(){return this.x;}
 	public int getY(){return this.y;}

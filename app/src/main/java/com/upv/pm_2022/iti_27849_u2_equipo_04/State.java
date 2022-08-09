@@ -13,8 +13,8 @@ public class State extends Figure {
     public static final float ratio_percentage  = (float)0.35;
     public static final float final_ratio       = (float)0.2;
 
-    public State(int id, int x, int y, String name, boolean isFinal) {
-        this.id = id; this.x = x; this.y = y; this.name = name; this.flag = isFinal;
+    public State(int id, int x, int y, boolean isFinal) {
+        super(id, x, y, "S_"); this.flag = isFinal;
         paint.setAntiAlias(true);
         paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
@@ -24,9 +24,7 @@ public class State extends Figure {
         paint.setTypeface(Typeface.SANS_SERIF);
     }
 
-    public State(int id, int x, int y, String name) { this(id, x, y, name, false); }
-
-    public State(int id, int x, int y) { this(id, x, y, "S_" + id); }
+    public State(int id, int x, int y) { this(id, x, y, false); }
 
     public void draw(Canvas canvas) {
         canvas.drawCircle(this.x, this.y, r, paint);
@@ -55,6 +53,7 @@ public class State extends Figure {
                  ((x-touchX) * (x-touchX)) + ((y-touchY) * (y-touchY)) <
                  (r*r*(1+ratio_percentage)*(1+ratio_percentage)) )
             return -2;
+//            return Tuple(this.id, true);
         return -1;
     }
 
