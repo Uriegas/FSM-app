@@ -87,8 +87,10 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	public void onDraw(Canvas canvas) {
 		canvas.drawColor(Color.WHITE);
 		if(figures != null)
-			for(Figure figure : figures)
-				 figure.draw(canvas);
+			try {
+				for(Figure figure : figures)
+					figure.draw(canvas);
+			} catch (Exception e) {e.printStackTrace();}
 	}
 
 	// TODO: Move functionality from onTouchEvent to Gestures
