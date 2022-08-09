@@ -14,7 +14,6 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.inputmethod.InputMethodManager;
-import androidx.annotation.RequiresApi;
 
 /**
  * Author: Meta @ vidasconcurrentes
@@ -93,7 +92,6 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	}
 
 	// TODO: Move functionality from onTouchEvent to Gestures
-	@RequiresApi(api = Build.VERSION_CODES.O)
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		Log.d(TAG, "Figure -> " + currentIndex);
@@ -106,32 +104,34 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 			case MotionEvent.ACTION_MOVE:
 				if(requestedLink) { // Create new arrow if user clicked in the edge of a circle
 					requestedLink = false;
-					State from = (State)figures.get(0);
+					State from = (State)figures.get(currentIndex);
 					TempArrow arrow = new TempArrow(id++, from, x, y);
 					figures.add(arrow);
 					currentIndex = arrow.onDown(x,y).node_id;
 				}
-				else if(currentIndex > -1) { // If a circle is touched and not locked move it
-					if (figures.get(currentIndex) instanceof Arrow &&
-							((Arrow) figures.get(currentIndex)).isLocked)
-						break;
+				else if(currentIndex > -1) {
 					figures.get(currentIndex).onMove(x, y);
 					if(figures.get(currentIndex) instanceof State)
 						snapNode((State) figures.get(currentIndex));
 				}
 				break;
 			case MotionEvent.ACTION_UP:
-				if(currentIndex > -1 && figures.get(currentIndex) instanceof Arrow) {// Crete arrow
-					// TODO: Create new Arrow which is linked to 2 nodes
-//					targetNode = getCurrentFigure(x, y);
-//					figures.add(new Arrow(originalNode, targetNode));
-					((Arrow)figures.get(currentIndex)).isLocked = true;
+				if(currentIndex>-1 && figures.get(currentIndex) instanceof TempArrow) {//Crete arrow
+					TempArrow arrow = (TempArrow) figures.get(currentIndex);
+					int arr_id = currentIndex;
+					currentIndex = -1; //Restart index so search for a new figure is possible
+					Figure node  = figures.get(getCurrentFigure(x,y));
+					if(node instanceof State) {
+						if(currentIndex == arrow.nodes.get(0).id) // Self link case
+							figures.set(arr_id, new SelfArrow(arr_id, (State)node));
+						else
+							figures.set(arr_id,
+									new FixedArrow(arr_id, arrow.nodes.get(0), (State)node));
+					} else {
+						figures.remove(arr_id);
+						id--;
+					}
 				}
-//				if(currentIndex>-1 && figures.get(currentIndex) instanceof TempArrow) {//Crete arrow
-//					State from = ((TempArrow) figures.get(currentIndex)).from;
-//					State to = new State();
-//					figures.set(currentIndex, new Arrow(from, to));
-//				}
 				currentIndex = -1;
 				break;
 		}
