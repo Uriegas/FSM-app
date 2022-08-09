@@ -6,7 +6,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.os.Build;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
@@ -55,7 +54,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	public void surfaceCreated(SurfaceHolder arg0) {
 		// Initialize data
 		figures = new ArrayList<>();
-		figures.add(new State(id++,500,500));
+		figures.add(new Node(id++,500,500));
 		currentIndex = -1;
 		//Initialize paint
 		p.setAntiAlias(true);
@@ -106,29 +105,29 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 			case MotionEvent.ACTION_MOVE:
 				if(requestedLink) { // Create new arrow if user clicked in the edge of a circle
 					requestedLink = false;
-					State from = (State)figures.get(currentIndex);
-					TempArrow arrow = new TempArrow(id++, from, x, y);
+					Node from = (Node)figures.get(currentIndex);
+					TempLink arrow = new TempLink(id++, from, x, y);
 					figures.add(arrow);
 					currentIndex = arrow.onDown(x,y).node_id;
 				}
 				else if(currentIndex > -1) {
 					figures.get(currentIndex).onMove(x, y);
-					if(figures.get(currentIndex) instanceof State)
-						snapNode((State) figures.get(currentIndex));
+					if(figures.get(currentIndex) instanceof Node)
+						snapNode((Node) figures.get(currentIndex));
 				}
 				break;
 			case MotionEvent.ACTION_UP:
-				if(currentIndex>-1 && figures.get(currentIndex) instanceof TempArrow) {//Crete arrow
-					TempArrow arrow = (TempArrow) figures.get(currentIndex);
+				if(currentIndex>-1 && figures.get(currentIndex) instanceof TempLink) {//Crete arrow
+					TempLink arrow = (TempLink) figures.get(currentIndex);
 					int arr_id = currentIndex;
 					currentIndex = -1; //Restart index so search for a new figure is possible
 					Figure node  = figures.get(getCurrentFigure(x,y));
-					if(node instanceof State) {
+					if(node instanceof Node) {
 						if(currentIndex == arrow.nodes.get(0).id) // Self link case
-							figures.set(arr_id, new SelfArrow(arr_id, (State)node));
+							figures.set(arr_id, new SelfLink(arr_id, (Node)node));
 						else
 							figures.set(arr_id,
-									new FixedArrow(arr_id, arrow.nodes.get(0), (State)node));
+									new FixedLink(arr_id, arrow.nodes.get(0), (Node)node));
 					} else {
 						figures.remove(arr_id);
 						id--;
@@ -169,7 +168,6 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		int x = (int) event.getX(); int y = (int) event.getY();
 		getCurrentFigure(x,y);
 		deleteDialog.show();
-//		arrows.add(new Arrow(id++, (int) motionEvent.getX(), (int) motionEvent.getY()));
 	}
 
 	/**
@@ -185,9 +183,6 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
 		Log.d(TAG, "On fling: called");
 		int x = (int) motionEvent.getX(); int y = (int) motionEvent.getY();
-		getCurrentFigure(x,y);
-		if(currentIndex != -1 && figures.get(currentIndex) instanceof Arrow)
-			((Arrow)figures.get(currentIndex)).isLocked = true;
 		return true;
 	}
 
@@ -254,7 +249,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		if(currentIndex > -1)
 			figures.get(currentIndex).setFlag();
 		else
-			figures.add(new State(id++, x, y));
+			figures.add(new Node(id++, x, y));
 		return false;
 	}
 
@@ -290,10 +285,10 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		return this.figures;
 	}
 
-	public void snapNode(State node) {
+	public void snapNode(Node node) {
 		for(Figure figure : figures) {
 			if(figure == node) continue;
-			if(figure instanceof State) {
+			if(figure instanceof Node) {
 				if(Math.abs(node.x - figure.x) < snapToPadding) node.x = figure.x;
 				if(Math.abs(node.y - figure.y) < snapToPadding) node.y = figure.y;
 			}

@@ -8,12 +8,12 @@ import android.graphics.Typeface;
 /**
  * A state of the FSM. Fixed size
  */
-public class State extends Figure {
+public class Node extends Figure {
     public float r = 81;
     public static final float ratio_percentage  = (float)0.35;
     public static final float final_ratio       = (float)0.2;
 
-    public State(int id, int x, int y, boolean isFinal) {
+    public Node(int id, int x, int y, boolean isFinal) {
         super(id, x, y, "S_"); this.flag = isFinal;
         paint.setAntiAlias(true);
         paint.setColor(Color.BLACK);
@@ -24,9 +24,9 @@ public class State extends Figure {
         paint.setTypeface(Typeface.SANS_SERIF);
     }
 
-    public State(int id, int x, int y, float r) { this(id, x, y); this.r = r; }
+    public Node(int id, int x, int y, float r) { this(id, x, y); this.r = r; }
 
-    public State(int id, int x, int y) { this(id, x, y, false); }
+    public Node(int id, int x, int y) { this(id, x, y, false); }
 
     public void draw(Canvas canvas) {
         canvas.drawCircle(this.x, this.y, r, paint);
@@ -77,11 +77,11 @@ public class State extends Figure {
      * @return the nearest point in the circumference of this circle
      * NOTE: Using invalid id (Integer.MAX_VALUE) to bypass id requirement in constructor
      */
-    public State getClosestPoint(int x_2, int y_2) {
+    public Node getClosestPoint(int x_2, int y_2) {
         float dx = x_2 - x;
         float dy = y_2 - y;
         float scale = r/(float) Math.sqrt(dx*dx + dy*dy);
-        return new State(Integer.MAX_VALUE, (int) (x + dx*scale), (int) (y + dy*scale));
+        return new Node(Integer.MAX_VALUE, (int) (x + dx*scale), (int) (y + dy*scale));
     }
 
     /**
@@ -109,7 +109,7 @@ public class State extends Figure {
                             " {$" + this.name + "$};\n";
         if(this.flag) // Draw inner circle (final state)
             latex_output += DRAW_COMMAND + ' ' + COLOR + " (" + x + ", -" + y + ") circle (" +
-                            ((this.r*(1-State.final_ratio))/CONVERSION_RATIO) + ");\n";
+                            ((this.r*(1- Node.final_ratio))/CONVERSION_RATIO) + ");\n";
         return latex_output;
     }
 }
