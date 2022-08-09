@@ -69,6 +69,20 @@ public class State extends Figure {
     }
 
     /**
+     * Get the closest point to this circle given the touched point in the screen
+     * @param x_2 touched point in x
+     * @param y_2 touched point in y
+     * @return the nearest point in the circumference of this circle
+     * NOTE: Using invalid id (Integer.MAX_VALUE) to bypass id requirement in constructor
+     */
+    public State getClosestPoint(int x_2, int y_2) {
+        float dx = x_2 - x;
+        float dy = y_2 - y;
+        float scale = r/(float) Math.sqrt(dx*dx + dy*dy);
+        return new State(Integer.MAX_VALUE, (int) (x + dx*scale), (int) (y + dy*scale));
+    }
+
+    /**
      * Change the position of the figure
      * @param touchX x touched
      * @param touchY y touched
