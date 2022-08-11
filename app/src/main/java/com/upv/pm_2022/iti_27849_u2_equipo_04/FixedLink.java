@@ -73,10 +73,10 @@ public class FixedLink extends Link {
         // Update parameters
         this.parallel       = (dx * (x - node_1.x) + dy * (y - node_1.y)) / (distance * distance);
         this.perpendicular  = (dx * (y - node_1.y) - dy * (x - node_1.x)) / distance;
-        // TODO: Add snap to straight line
-//        if(this.parallel > 0 && this.parallel < 1 && Math.abs(this.perpendicular) < snapPadding) {
-//            this.perpendicular = 0;
-//        }
+        // Snap to straight line
+        if(this.parallel > 0 && this.parallel < 1 && Math.abs(this.perpendicular) < Figure.snapPad){
+            this.perpendicular = 0;
+        }
     }
 
     @Override

@@ -16,7 +16,6 @@ import java.util.ArrayList;
  * Every class that extends this class should set textX and textY
  */
 public abstract class Link extends Figure {
-    // TODO: Set snap padding for curved lines -> straight lines
     protected final int fontSize = 38;
     private final Paint p_fill= new Paint();
     // TODO: Same tolerance for width of the arrow head (triangle)
@@ -192,7 +191,7 @@ public abstract class Link extends Figure {
      * @param y_2 y coordinate of the second point
      */
     protected void drawName(Canvas canvas, int x_1, int y_1, int x_2, int y_2) {
-        // TODO: Fine tune this
+        // TODO: Fine tune; probably this doesn't work well because of floats; change float->double
         float width = this.name.length()*fontSize;
         textX = (float)(x_1+x_2)/2; textY = (float)(y_1+y_2)/2;
         double textAngle = Math.atan2(x_2-x_1, y_1-y_2);

@@ -15,6 +15,7 @@ public abstract class Figure {
 	protected int x;
 	protected int y;
 	protected boolean flag;
+	public static final int snapPad = 18; // Used for snap padding between figures
 	protected final Paint paint = new Paint();
 	public String name;
 

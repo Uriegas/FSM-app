@@ -33,8 +33,6 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	private final GestureDetector gestureDetector;
 	private static final String TAG = "FSM_canvas";
 	private final Paint p;
-	private static final int snapToPadding = 18;
-
 
 	public DragAndDropView(Context context) {
 		super(context);
@@ -286,13 +284,17 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		return this.figures;
 	}
 
-	// TODO: Move snapNode() to onMove inside Node
+	/**
+	 * Pad node to other nodes; this code has to be here and not in {@link Node},
+	 * because the function needs to look to other nodes
+	 * @param node node to pad
+	 */
 	public void snapNode(Node node) {
 		for(Figure figure : figures) {
 			if(figure == node) continue;
 			if(figure instanceof Node) {
-				if(Math.abs(node.x - figure.x) < snapToPadding) node.x = figure.x;
-				if(Math.abs(node.y - figure.y) < snapToPadding) node.y = figure.y;
+				if(Math.abs(node.x - figure.x) < Figure.snapPad) node.x = figure.x;
+				if(Math.abs(node.y - figure.y) < Figure.snapPad) node.y = figure.y;
 			}
 		}
 	}
