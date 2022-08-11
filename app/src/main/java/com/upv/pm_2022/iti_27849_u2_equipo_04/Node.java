@@ -29,7 +29,7 @@ public class Node extends Figure {
     public Node(int id, int x, int y) { this(id, x, y, false); }
 
     public void draw(Canvas canvas) {
-        canvas.drawCircle(this.x, this.y, r, paint);
+        canvas.drawCircle(this.x, this.y, this.r, paint);
         if(this.flag)
             canvas.drawCircle(this.x, this.y, r-r*final_ratio, paint);
         canvas.drawText(name, this.x, this.y, paint);

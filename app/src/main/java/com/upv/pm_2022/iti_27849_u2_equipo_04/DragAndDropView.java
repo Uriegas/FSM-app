@@ -6,6 +6,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.RectF;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
@@ -86,7 +88,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	public void onDraw(Canvas canvas) {
 		canvas.drawColor(Color.WHITE);
 		if(figures != null)
-			try {
+			try { // Handle multiple access to same resource (Threads issue)
 				for(Figure figure : figures)
 					figure.draw(canvas);
 			} catch (Exception e) {e.printStackTrace();}
@@ -172,7 +174,6 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 
 	/**
 	 * When an arrow is created it will be locked, thus it can not be redrawn
-	 * TODO: I don't remember what this code does
 	 * @param motionEvent event
 	 * @param motionEvent1 new event
 	 * @param v position v
@@ -285,6 +286,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 		return this.figures;
 	}
 
+	// TODO: Move snapNode() to onMove inside Node
 	public void snapNode(Node node) {
 		for(Figure figure : figures) {
 			if(figure == node) continue;
