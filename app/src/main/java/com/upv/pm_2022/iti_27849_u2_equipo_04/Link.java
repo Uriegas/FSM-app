@@ -80,19 +80,26 @@ public abstract class Link extends Figure {
      * @param endAngle end angle for drawing the curve
      * @param isReversed if the line is to be reversed in direction
      */
-    protected void draw(Canvas canvas, int x_1, int y_1, int x_2, int y_2, Node circle,
-                        double startAngle, double endAngle, double reverseScale, boolean isReversed) {
+    protected void draw(Canvas canvas, double x_1, double y_1, double x_2, double y_2, Node circle, double
+                        startAngle, double endAngle, double reverseScale, boolean isReversed) {
         // Draw arrow
         Path path = new Path();
         if (this.perpendicular == 0) { // Draw straight line
             // Draw line
-            path.moveTo(x_1, y_1);
-            path.lineTo(x_2, y_2);
+            path.moveTo((float) x_1, (float) y_1);
+            path.lineTo((float) x_2, (float) y_2);
             drawArrowHead(canvas, x_2, y_2, Math.atan2(y_2-y_1, x_2-x_1));
             // Draw name
-            drawName(canvas, x_1, y_1, x_2, y_2);
+            textX = (float)(x_1+x_2)/2; textY = (float)(y_1+y_2)/2;
+            double textAngle = Math.atan2(x_2-x_1, y_1-y_2);
+            drawName(canvas, textX, textY, textAngle + this.lineAdjust);
         } else { // Draw arched line
-            drawArrowHead(canvas, x_2, y_2, endAngle - reverseScale * (Math.PI/2));
+            if(x_1 == 0 && y_1 == 0 ) { // Draw arrow head for self link, this would fail if the
+                                        // user puts a node in 0,0 which is unlikely but possible
+                drawArrowHead(canvas, x_2, y_2, endAngle + Math.PI * 0.4);
+            } else { // Draw arrow head for an arched link
+                drawArrowHead(canvas, x_2, y_2, endAngle - reverseScale * (Math.PI/2));
+            }
             // Convert radian angles to degrees
             startAngle  = (float) Math.toDegrees(startAngle);
             endAngle    = (float) Math.toDegrees(endAngle);
@@ -106,7 +113,7 @@ public abstract class Link extends Figure {
             double textAngle = (startAngle + endAngle) / 2 + (isReversed ? 1 : 0) * Math.PI;
             double tX = circle.x + circle.r * Math.cos(textAngle);
             double tY = circle.y + circle.r * Math.sin(textAngle);
-            drawName(canvas, tX, tY, textAngle + lineAdjust );
+            drawName(canvas, tX, tY, textAngle);
 
 //            textX = (float)(x_1+x_2)/2; textY = (float)(y_1+y_2)/2;
 //            double textAngle = Math.atan2(x_2-x_1, y_1-y_2);
@@ -125,7 +132,7 @@ public abstract class Link extends Figure {
      * @param endAngle angle to draw line unto
      * @param isReversed Specifies whether the drawing should be counterclockwise or clockwise
      */
-    private void drawCurvedLine(Path path, int x, int y, float r, double startAngle,
+    protected void drawCurvedLine(Path path, int x, int y, float r, double startAngle,
                                 double endAngle, boolean isReversed) {
         // Create the RectF based on circle info (x, y, r)
         RectF oval  = new RectF(x-r, y-r, x+r, y+r);
@@ -186,12 +193,12 @@ public abstract class Link extends Figure {
      * @param y coordinate of the last point of the arrow
      * @param alpha angle from the cartesian plane to the given coordinate (x,y)
      */
-    protected void drawArrowHead(Canvas canvas, int x, int y, double alpha) {
+    protected void drawArrowHead(Canvas canvas, double x, double y, double alpha) {
         double dx = Math.cos(alpha);
         double dy = Math.sin(alpha);
 
         Path path = new Path();
-        path.moveTo(x,y);
+        path.moveTo((float) x, (float) y);
         path.lineTo((float)(x - 24 * dx + 15 * dy), (float)(y - 24 * dy - 15 * dx));
         path.lineTo((float)(x - 24 * dx - 15 * dy), (float)(y - 24 * dy + 15 * dx));
         canvas.drawPath(path, p_fill);
@@ -210,6 +217,7 @@ public abstract class Link extends Figure {
         double width = this.name.length()*fontSize;
         textX = (float)(x_1+x_2)/2; textY = (float)(y_1+y_2)/2;
         double textAngle = Math.atan2(x_2-x_1, y_1-y_2);
+
         double cos = Math.cos(textAngle), sin = Math.sin(textAngle);
         double cornerX = (width/2 + 5)*(cos > 0 ? 1 : -1), cornerY = (fontSize)*(sin > 0 ? 1 : -1);
         double slide = sin * Math.pow(Math.abs(sin), 40) * cornerX - cos *
@@ -239,9 +247,11 @@ public abstract class Link extends Figure {
                          - cos * Math.pow(Math.abs(cos), 10) * cornerY;
             x += cornerX - sin * slide;
             y += cornerY - cos * slide;
-        } else {
-
         }
+//        else {
+//            // TODO
+//        }
+        this.textX = (float)x; this.textY = (float)y;
         canvas.drawText(this.name, this.textX, this.textY + 6, paint);
     }
 

@@ -23,6 +23,8 @@ public class FixedLink extends Link {
      * Get anchor point (Node), then create a circle from the 3 points (node_1, node_2, anchor),
      * set the starting and ending points to draw the line
      * @param canvas canvas to draw in
+     * TODO: The problem with the drawing is related to the fact that the draw method is not
+     *               always correctly drawing, while the onDown method always works
      */
     @Override
     public void draw(Canvas canvas) {
@@ -51,7 +53,7 @@ public class FixedLink extends Link {
             y_1 = (int) (circle.y + circle.r * Math.sin(startAngle));
             x_2 = (int) (circle.x + circle.r * Math.cos(endAngle));
             y_2 = (int) (circle.y + circle.r * Math.sin(endAngle));
-            // TODO: Uppart should be in getInfo
+            // TODO: Up part should be in getInfo
             draw(canvas, x_1, y_1, x_2, y_2, circle, startAngle, endAngle, reverseScale, isReversed);
         }
     }
