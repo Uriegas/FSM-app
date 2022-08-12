@@ -37,17 +37,37 @@ public class SelfLink extends Link {
     @Override
     public Tuple onDown(int touchX, int touchY) {
         Node node = nodes.get(0);
-        return onDown(touchX, touchY, node.x, node.y, node.x, node.y);
+        //Create circle info
+        double circleX = node.x + 1.5 * node.r * Math.cos(angle);
+        double circleY = node.y + 1.5 * node.r * Math.sin(angle);
+        double circleR = 0.75 * node.r;
+        Node circle = new Node(Integer.MAX_VALUE, (int) circleX, (int) circleY, (float) circleR);
+
+        // Get distance from touched point and circle
+        double dx = touchX - circle.x;
+        double dy = touchY - circle.y;
+        double distance = Math.sqrt(dx*dx + dy*dy) - circle.r;
+
+        if(Math.abs(distance) < 24)
+            return new Tuple(this.id);
+        return new Tuple(-1);
     }
 
     @Override
-    public void onMove(int touchX, int touchY){ } // TODO: Change where the self link is
+    public void onMove(int touchX, int touchY) {
+        Node node = nodes.get(0);
+        this.angle = Math.atan2(touchY - node.y, touchX - node.x);
+        double snap = Math.round(this.angle / (Math.PI / 2)) * (Math.PI / 2);
+        if(Math.abs(this.angle - snap) < 0.1) this.angle = snap;
+        if(this.angle < -Math.PI) this.angle += 2 * Math.PI;
+        if(this.angle >  Math.PI) this.angle -= 2 * Math.PI;
+    }
 
     @Override
-    public void setFlag() { } // TODO: How to change the direction of this?, is it necessary?
+    public void setFlag(){}// Double click over self link shouldn't revert the direction of the line
 
     @Override
-    public String toLatex(float resize_factor) {
+    public String toLatex(float resize_factor) { // TODO: This method
         Node from = nodes.get(0);
         return toLatex(resize_factor, from.x, from.y, this.x, this.y);
     }
