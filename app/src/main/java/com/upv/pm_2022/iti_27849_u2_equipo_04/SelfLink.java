@@ -6,7 +6,7 @@ public class SelfLink extends Link {
     private double angle;
     public SelfLink(int id, Node node) {
         super(id, node);
-        this.textX = (float)(node.x); this.textY = (float)(node.y); // TODO: Check this logic
+        this.textX = (float)(node.x); this.textY = (float)(node.y);
         this.perpendicular = 1; // NOTE: This has to be not 0 in order to super.draw() call to work
         this.angle = 0;
     }
@@ -32,6 +32,8 @@ public class SelfLink extends Link {
 
         // Draw arched line, head of the arrow and name
         draw(canvas, 0, 0, x_2, y_2, circle, startAngle, endAngle, 0, false);
+        this.textX = (float) circleX; this.textY = (float) circleY
+        canvas.drawText(this.name, this.textX, this.textY + 6, this.paint);
     }
 
     @Override
