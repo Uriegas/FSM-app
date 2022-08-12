@@ -2,6 +2,8 @@ package com.upv.pm_2022.iti_27849_u2_equipo_04;
 
 import android.graphics.Canvas;
 
+import java.util.HashMap;
+
 public class FixedLink extends Link {
     public FixedLink(int id, Node from, Node to) {
         super(id, from, to);
@@ -25,7 +27,8 @@ public class FixedLink extends Link {
     @Override
     public void draw(Canvas canvas) {
         Node from = nodes.get(0); Node to = nodes.get(1);
-        int x_1, y_1, x_2, y_2;
+        int x_1, y_1, x_2, y_2; // TODO: Convert to double and test accuracy
+        // TODO: This should be in getInfo
         if(this.perpendicular == 0) { // Get data for straight line
             // Get middle point between the 2 nodes
             int midX = (from.x + to.x)/2;
@@ -48,7 +51,42 @@ public class FixedLink extends Link {
             y_1 = (int) (circle.y + circle.r * Math.sin(startAngle));
             x_2 = (int) (circle.x + circle.r * Math.cos(endAngle));
             y_2 = (int) (circle.y + circle.r * Math.sin(endAngle));
+            // TODO: Uppart should be in getInfo
             draw(canvas, x_1, y_1, x_2, y_2, circle, startAngle, endAngle, reverseScale, isReversed);
+        }
+    }
+
+    /**
+     * Get information of the current link
+     * @return
+     */
+    private HashMap<String, Object> getLinkInfo() {
+        Node from = nodes.get(0); Node to = nodes.get(1);
+        int x_1, y_1, x_2, y_2; // TODO: Convert to double and test accuracy
+        HashMap map = new HashMap<String, Object>();
+        if(this.perpendicular == 0) {
+            return null;
+        } else {
+            Node anchor = getAnchorPoint();
+            Node circle = circleFromThreePoints(from.x, from.y, to.x, to.y, anchor.x, anchor.y);
+            boolean isReversed = (this.perpendicular > 0);
+            int reverseScale = isReversed ? 1 : -1;
+            double startAngle = Math.atan2(from.y - circle.y, from.x - circle.x)
+                    - reverseScale * from.r / circle.r;
+            double endAngle   = Math.atan2(to.y - circle.y, to.x - circle.x)
+                    + reverseScale * to.r / circle.r;
+            x_1 = (int) (circle.x + circle.r * Math.cos(startAngle));
+            y_1 = (int) (circle.y + circle.r * Math.sin(startAngle));
+            x_2 = (int) (circle.x + circle.r * Math.cos(endAngle));
+            y_2 = (int) (circle.y + circle.r * Math.sin(endAngle));
+
+            // Add stuff to HashMap
+            map.put("circle", circle);
+            map.put("startAngle", startAngle);
+            map.put("endAngle", endAngle);
+            map.put("reverseScale", reverseScale);
+            map.put("isReversed", isReversed);
+            return map;
         }
     }
 
@@ -56,7 +94,37 @@ public class FixedLink extends Link {
     @Override
     public Tuple onDown(int touchX, int touchY) {
         Node from = nodes.get(0); Node to = nodes.get(1);
-        return onDown(touchX, touchY, from.x, from.y, to.x, to.y);
+
+        if(this.perpendicular == 0) { // It is a straight line
+            return onDown(touchX, touchY, from.x, from.y, to.x, to.y);
+        } else { // It is a curved line
+            // Get necessary info
+            HashMap map = getLinkInfo();
+            Node circle = (Node) map.get("circle");
+            double startAngle = (Double) map.get("startAngle");
+            double endAngle   = (Double) map.get("endAngle");
+            int reverseScale  = (Integer)map.get("reverseScale");
+            boolean isReversed= (Boolean)map.get("isReversed");
+
+            // Compute distance between clicked point and valid curved line of circle
+            double dx = touchX - circle.x;
+            double dy = touchY - circle.y;
+            double distance = Math.sqrt(dx*dx + dy*dy) - circle.r;
+            if(Math.abs(distance) < 24) { // This number changes the sensibility to the onTouch
+                double angle = Math.atan2(dy, dx);
+                if(isReversed) {
+                    double tmp = startAngle;
+                    startAngle = endAngle;
+                    endAngle   = tmp;
+                }
+                if(endAngle < startAngle) endAngle += Math.PI * 2;
+                if(angle < startAngle)    angle    += Math.PI * 2;
+                else if(angle > endAngle) angle    -= Math.PI * 2;
+
+                if (angle > startAngle && angle < endAngle) return new Tuple(this.id);
+            }
+            return new Tuple(-1);
+        }
     }
 
     /**
@@ -71,11 +139,13 @@ public class FixedLink extends Link {
         double dy = node_2.y - node_1.y;
         double distance = Math.sqrt(dx*dx + dy*dy);
         // Update parameters
-        this.parallel       = (dx * (x - node_1.x) + dy * (y - node_1.y)) / (distance * distance);
-        this.perpendicular  = (dx * (y - node_1.y) - dy * (x - node_1.x)) / distance;
+        this.parallel       = (dx * ((double)x - node_1.x) + dy * ((double)y - node_1.y))
+                              / (distance * distance);
+        this.perpendicular  = (dx * ((double)y - node_1.y) - dy * ((double)x - node_1.x))
+                              / distance;
         // Snap to straight line
         if(this.parallel > 0 && this.parallel < 1 && Math.abs(this.perpendicular) < Figure.snapPad){
-            this.perpendicular = 0;
+            this.lineAdjust = (this.perpendicular < 0 ? 1 : 0) * Math.PI; this.perpendicular = 0;
         }
     }
 

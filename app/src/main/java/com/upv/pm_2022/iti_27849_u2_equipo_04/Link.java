@@ -24,7 +24,8 @@ public abstract class Link extends Figure {
     protected ArrayList<Node> nodes; // TODO: Assert nodes.length <= 2 == True
 
     // Parallel = percentage of line node_1 to node_2; Perpendicular = pixels from line
-    protected double perpendicular = 0, parallel = 0.5;
+    // LineAdjust is a flag to adjust the angle of the text to be drawn
+    protected double perpendicular = 0, parallel = 0.5, lineAdjust = 0;
 
     protected Link(int id, Node from, Node to) { // Constructor for fixed arrow
         this(id, 0, 0); nodes.add(from); nodes.add(to);
@@ -37,7 +38,7 @@ public abstract class Link extends Figure {
     }
 
     public Link(int id, int x, int y) {
-        super(id,x,y,"a_");nodes=new ArrayList<>();this.flag=false; // Flag for arrow direction
+        super(id,x,y,"a_");nodes=new ArrayList<>();this.flag=false;// Flag for arrow direction
         // Arrow line
         paint.setAntiAlias(true);
         paint.setColor(Color.BLACK);
@@ -64,6 +65,7 @@ public abstract class Link extends Figure {
      * @param y_2 end point in y
      */
     protected void draw(Canvas canvas, int x_1, int y_1, int x_2, int y_2){
+        this.perpendicular = 0; // Just in case this var is not set to 0, so this wont fail
         draw(canvas, x_1, y_1, x_2, y_2, null, 0f, 0f, 0, false);
     }
 
@@ -79,25 +81,38 @@ public abstract class Link extends Figure {
      * @param isReversed if the line is to be reversed in direction
      */
     protected void draw(Canvas canvas, int x_1, int y_1, int x_2, int y_2, Node circle,
-                        float startAngle, float endAngle, int reverseScale, boolean isReversed) {
+                        double startAngle, double endAngle, double reverseScale, boolean isReversed) {
         // Draw arrow
         Path path = new Path();
         if (this.perpendicular == 0) { // Draw straight line
-            path.moveTo(x_1, y_1); // No needed since arcTo execs moveTo when path is empty
+            // Draw line
+            path.moveTo(x_1, y_1);
             path.lineTo(x_2, y_2);
             drawArrowHead(canvas, x_2, y_2, Math.atan2(y_2-y_1, x_2-x_1));
+            // Draw name
+            drawName(canvas, x_1, y_1, x_2, y_2);
         } else { // Draw arched line
             drawArrowHead(canvas, x_2, y_2, endAngle - reverseScale * (Math.PI/2));
             // Convert radian angles to degrees
             startAngle  = (float) Math.toDegrees(startAngle);
             endAngle    = (float) Math.toDegrees(endAngle);
-            // Drawing
+            // Draw arch
+            // TODO: If setting the isReversed flag doesn't get fix, then implement logic to update
+            //  it here; in other words, the curved line is not always well drawn
             drawCurvedLine(path, circle.x, circle.y, circle.r, startAngle, endAngle, isReversed);
+            // Draw name
+            double width = this.name.length()*fontSize;
+            if(endAngle < startAngle) endAngle += Math.PI * 2;
+            double textAngle = (startAngle + endAngle) / 2 + (isReversed ? 1 : 0) * Math.PI;
+            double tX = circle.x + circle.r * Math.cos(textAngle);
+            double tY = circle.y + circle.r * Math.sin(textAngle);
+            drawName(canvas, tX, tY, textAngle + lineAdjust );
+
+//            textX = (float)(x_1+x_2)/2; textY = (float)(y_1+y_2)/2;
+//            double textAngle = Math.atan2(x_2-x_1, y_1-y_2);
         }
+        // Draw the whole thing
         canvas.drawPath(path, paint);
-        // Draw name of the arrow (centered, not considering arch yet)
-        drawName(canvas, x_1, y_1, x_2, y_2);
-        // Draw Head of the Arrow (triangle) - Get the angle
     }
 
     /**
@@ -110,8 +125,8 @@ public abstract class Link extends Figure {
      * @param endAngle angle to draw line unto
      * @param isReversed Specifies whether the drawing should be counterclockwise or clockwise
      */
-    private void drawCurvedLine(Path path, int x, int y, float r, float startAngle,
-                                float endAngle, boolean isReversed) {
+    private void drawCurvedLine(Path path, int x, int y, float r, double startAngle,
+                                double endAngle, boolean isReversed) {
         // Create the RectF based on circle info (x, y, r)
         RectF oval  = new RectF(x-r, y-r, x+r, y+r);
 //        path.addRect(oval, Path.Direction.CW);
@@ -119,7 +134,7 @@ public abstract class Link extends Figure {
         // Apply the isReversed flag
         if(isReversed) endAngle = -(360 - endAngle);
         // Draw the arc
-        path.addArc(oval, startAngle, endAngle);
+        path.addArc(oval, (float) startAngle, (float) endAngle);
     }
 
 
@@ -192,7 +207,7 @@ public abstract class Link extends Figure {
      */
     protected void drawName(Canvas canvas, int x_1, int y_1, int x_2, int y_2) {
         // TODO: Fine tune; probably this doesn't work well because of floats; change float->double
-        float width = this.name.length()*fontSize;
+        double width = this.name.length()*fontSize;
         textX = (float)(x_1+x_2)/2; textY = (float)(y_1+y_2)/2;
         double textAngle = Math.atan2(x_2-x_1, y_1-y_2);
         double cos = Math.cos(textAngle), sin = Math.sin(textAngle);
@@ -202,6 +217,32 @@ public abstract class Link extends Figure {
         textX += cornerX - sin * slide;
         textY += cornerY + cos * slide;
         canvas.drawText(name, textX, textY, paint);
+    }
+
+    /**
+     * Draws the name of the current link in the given position
+     * @param canvas canvas to draw in
+     * @param x x-position to draw in
+     * @param y y-position to draw in
+     * @param angle angle of the current link
+     */
+    private void drawName(Canvas canvas, double x, double y, double angle) {
+        double width = this.name.length()*fontSize;
+        x -= width/2;
+
+        if(angle != 0) { // position text if an angle is given
+            double cos = Math.cos(angle);
+            double sin = Math.sin(angle);
+            double cornerX = (width / 2 + 5) * (cos > 0 ? 1 : -1);
+            double cornerY = 15 * (sin > 0 ? 1 : -1);
+            double slide = sin * Math.pow(Math.abs(sin), 40) * cornerX
+                         - cos * Math.pow(Math.abs(cos), 10) * cornerY;
+            x += cornerX - sin * slide;
+            y += cornerY - cos * slide;
+        } else {
+
+        }
+        canvas.drawText(this.name, this.textX, this.textY + 6, paint);
     }
 
     /**
