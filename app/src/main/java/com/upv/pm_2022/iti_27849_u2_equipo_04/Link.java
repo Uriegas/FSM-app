@@ -99,6 +99,13 @@ public abstract class Link extends Figure {
                 drawArrowHead(canvas, x_2, y_2, endAngle + Math.PI * 0.4);
             } else { // Draw arrow head for an arched link
                 drawArrowHead(canvas, x_2, y_2, endAngle - reverseScale * (Math.PI/2));
+                // Draw name
+                double width = this.name.length()*fontSize;
+                if(endAngle < startAngle) endAngle += Math.PI * 2;
+                double textAngle = (startAngle + endAngle) / 2 + (isReversed ? 1 : 0) * Math.PI;
+                double tX = circle.x + circle.r * Math.cos(textAngle);
+                double tY = circle.y + circle.r * Math.sin(textAngle);
+                drawName(canvas, tX, tY, textAngle);
             }
             // Convert radian angles to degrees
             startAngle  = (float) Math.toDegrees(startAngle);
@@ -107,13 +114,6 @@ public abstract class Link extends Figure {
             // TODO: If setting the isReversed flag doesn't get fix, then implement logic to update
             //  it here; in other words, the curved line is not always well drawn
             drawCurvedLine(path, circle.x, circle.y, circle.r, startAngle, endAngle, isReversed);
-            // Draw name
-            double width = this.name.length()*fontSize;
-            if(endAngle < startAngle) endAngle += Math.PI * 2;
-            double textAngle = (startAngle + endAngle) / 2 + (isReversed ? 1 : 0) * Math.PI;
-            double tX = circle.x + circle.r * Math.cos(textAngle);
-            double tY = circle.y + circle.r * Math.sin(textAngle);
-            drawName(canvas, tX, tY, textAngle);
 
 //            textX = (float)(x_1+x_2)/2; textY = (float)(y_1+y_2)/2;
 //            double textAngle = Math.atan2(x_2-x_1, y_1-y_2);

@@ -32,7 +32,7 @@ public class SelfLink extends Link {
 
         // Draw arched line, head of the arrow and name
         draw(canvas, 0, 0, x_2, y_2, circle, startAngle, endAngle, 0, false);
-        this.textX = (float) circleX; this.textY = (float) circleY
+        this.textX = (float) circleX; this.textY = (float) circleY;
         canvas.drawText(this.name, this.textX, this.textY + 6, this.paint);
     }
 
