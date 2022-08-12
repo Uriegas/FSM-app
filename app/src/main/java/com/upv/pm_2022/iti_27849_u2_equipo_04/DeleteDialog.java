@@ -14,7 +14,6 @@ public class DeleteDialog extends Dialog {
         this.activity = activity;
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,7 +21,7 @@ public class DeleteDialog extends Dialog {
         setContentView(R.layout.dialog_delete);
         setTitle("Eliminar figura");
 
-        findViewById(R.id.saveBtn).setOnClickListener(v -> {
+        findViewById(R.id.saveBtn).setOnClickListener(v -> { // TODO: Delete figure
             Log.d(TAG, "Aquí elimina jiji");
         });
 

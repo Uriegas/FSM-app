@@ -19,7 +19,7 @@ public abstract class Link extends Figure {
     // TODO: Same tolerance for width of the arrow head (triangle)
     private final static int tolerance = 24;
     protected float textX, textY;
-    protected ArrayList<Node> nodes; // TODO: Assert nodes.length <= 2 == True
+    protected ArrayList<Node> nodes; // TEST: Assert nodes.length <= 2 == True
 
     // Parallel = percentage of line node_1 to node_2; Perpendicular = pixels from line
     // LineAdjust is a flag to adjust the angle of the text to be drawn
@@ -78,8 +78,8 @@ public abstract class Link extends Figure {
      * @param endAngle end angle for drawing the curve
      * @param isReversed if the line is to be reversed in direction
      */
-    protected void draw(Canvas canvas, double x_1, double y_1, double x_2, double y_2, Node circle, double
-                        startAngle, double endAngle, double reverseScale, boolean isReversed) {
+    protected void draw(Canvas canvas, double x_1, double y_1, double x_2, double y_2, Node circle,
+                        double startAngle, double endAngle, double reverseScale,boolean isReversed){
         // Draw arrow
         Path path = new Path();
         if (this.perpendicular == 0) { // Draw straight line
@@ -281,9 +281,12 @@ public abstract class Link extends Figure {
      */
     protected Node circleFromThreePoints(int x1, int y1, int x2, int y2, int x3, int y3) {
         double a = det(x1, y1, 1, x2, y2, 1, x3, y3, 1);
-        double bx = -det(x1*x1 + y1*y1, y1, 1, x2*x2 + y2*y2, y2, 1, x3*x3 + y3*y3, y3, 1);
-        double by = det(x1*x1 + y1*y1, x1, 1, x2*x2 + y2*y2, x2, 1, x3*x3 + y3*y3, x3, 1);
-        double c = -det(x1*x1 + y1*y1, x1, y1, x2*x2 + y2*y2, x2, y2, x3*x3 + y3*y3, x3, y3);
+        double bx = -det(x1*x1 + y1*y1, y1, 1, x2*x2 + y2*y2, y2, 1, x3*x3 + y3*y3,
+                    y3, 1);
+        double by = det(x1*x1 + y1*y1, x1, 1, x2*x2 + y2*y2, x2, 1, x3*x3 + y3*y3,
+                    x3, 1);
+        double c = -det(x1*x1 + y1*y1, x1, y1, x2*x2 + y2*y2, x2, y2, x3*x3 + y3*y3, x3,
+                    y3);
         return new Node(Integer.MAX_VALUE, (int)(-bx / (2*a)), (int)(-by / (2*a)),
                 (float)(Math.sqrt(bx*bx + by*by - 4*a*c) / (2*Math.abs(a))) );
     }
@@ -292,7 +295,8 @@ public abstract class Link extends Figure {
      * Get the determinant for the given matrix
      * @return the determinant
      */
-    private double det(double a, double b, double c, double d, double e, double f, double g, double h, double i) {
+    private double det(double a, double b, double c, double d, double e, double f, double g,
+                       double h, double i) {
         return a*e*i + b*f*g + c*d*h - a*f*h - b*d*i - c*e*g;
     }
 }

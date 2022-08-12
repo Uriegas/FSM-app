@@ -18,7 +18,7 @@ import android.view.inputmethod.InputMethodManager;
 
 /**
  * Author: Meta @ vidasconcurrentes
- * Related to: http://vidasconcurrentes.blogspot.com/2011/06/detectando-drag-drop-en-un-canvas-de.html
+ * Related: http://vidasconcurrentes.blogspot.com/2011/06/detectando-drag-drop-en-un-canvas-de.html
  * Edited by Andrea Charles, Eduardo Uriegas
  */
 public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callback,
@@ -92,7 +92,6 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 			} catch (Exception e) {e.printStackTrace();}
 	}
 
-	// TODO: Move functionality from onTouchEvent to Gestures
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		Log.d(TAG, "Figure -> " + currentIndex);
@@ -163,11 +162,11 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	}
 
 	@Override
-	public void onLongPress(MotionEvent event) {
+	public void onLongPress(MotionEvent event) { // TODO: Delete figures on demand
 		Log.d(TAG, "On long press: called");
-		int x = (int) event.getX(); int y = (int) event.getY();
-		getCurrentFigure(x,y);
-		deleteDialog.show();
+//		int x = (int) event.getX(); int y = (int) event.getY();
+//		getCurrentFigure(x,y);
+//		deleteDialog.show();
 	}
 
 	/**
@@ -216,6 +215,7 @@ public class DragAndDropView extends SurfaceView implements SurfaceHolder.Callba
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		Log.d(TAG, "Key Up " + (char) event.getUnicodeChar() + " pressed");
 		//TODO: It makes sense having this code @onKeyDown() since that supports hardware keyboards
+		// 		The show keyboard functionality is a little buggy
 		if(currentIndex != -1) {
 			Figure figure = figures.get(currentIndex);
 			if (keyCode==KeyEvent.KEYCODE_DEL && figure.name.length()>0)

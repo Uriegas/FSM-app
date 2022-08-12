@@ -44,11 +44,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * Features:
- * On double click in canvas;           create a new state and focus on its name, highlight in blue.
- * On double click inside a state;      change state type.
- * On single click inside a state;      change state name,                        highlight in blue.
- * On pressed click and drag;           Create arrow to another state,            highlight in blue.
+ * Main activity for the app
  */
 public class MainActivity extends AppCompatActivity {
 
@@ -91,9 +87,11 @@ public class MainActivity extends AppCompatActivity {
         btnExportar.setText("Export");
 
         //Parametros del botón
-        RelativeLayout.LayoutParams lyt = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
+        RelativeLayout.LayoutParams lyt = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,RelativeLayout.LayoutParams.WRAP_CONTENT);
 
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT,RelativeLayout.LayoutParams.MATCH_PARENT);
 
         //Se le agregan los parametos al botón
         botones.setLayoutParams(params);
@@ -130,9 +128,10 @@ public class MainActivity extends AppCompatActivity {
                                                 .toString() + '/' + FILE_NAME + ".tex");
                 out.append(toLatex(vista.getAllFigures())); out.flush(); out.close();
                 Toast.makeText(getBaseContext(), "Tex file exported into root folder",
-                               Toast.LENGTH_LONG).show();
+                                Toast.LENGTH_LONG).show();
             } catch (Exception e) {
-                Toast.makeText(getBaseContext(), "An error occurred", Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "An error occurred",
+                                Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
         });
@@ -156,7 +155,8 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getBaseContext(), "PNG file exported into root folder",
                             Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
-                    Toast.makeText(getBaseContext(), "An error occurred", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "An error occurred", Toast.LENGTH_LONG)
+                            .show();
                     e.printStackTrace();
                 }
 
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageName = "IMG_" + timeStamp + ".jpg";
 
-        String selectedOutputPath = Environment.getExternalStorageDirectory() + File.separator + imageName;
+        String outputPath = Environment.getExternalStorageDirectory() + File.separator + imageName;
 //        Log.d(FILE_NAME, "selected camera path " + selectedOutputPath);
 
         vista.setDrawingCacheEnabled(true);
@@ -196,10 +196,12 @@ public class MainActivity extends AppCompatActivity {
         int bHeight = bitmap.getHeight();
 
         if (bWidth > bHeight) {
-            int imageHeight = (int) Math.abs(maxSize * ((float)bitmap.getWidth() / (float) bitmap.getHeight()));
+            int imageHeight = (int) Math.abs(maxSize * ((float)bitmap.getWidth() /
+                    (float) bitmap.getHeight()));
             bitmap = Bitmap.createScaledBitmap(bitmap, maxSize, imageHeight, true);
         } else {
-            int imageWidth = (int) Math.abs(maxSize * ((float)bitmap.getWidth() / (float) bitmap.getHeight()));
+            int imageWidth = (int) Math.abs(maxSize * ((float)bitmap.getWidth() /
+                    (float) bitmap.getHeight()));
             bitmap = Bitmap.createScaledBitmap(bitmap, imageWidth, maxSize, true);
         }
         vista.setDrawingCacheEnabled(false);
@@ -207,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
 
         OutputStream fOut = null;
         try {
-            File file = new File(selectedOutputPath);
+            File file = new File(outputPath);
             fOut = new FileOutputStream(file);
 
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
@@ -219,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             Toast.makeText(getBaseContext(), "An error occurred", Toast.LENGTH_LONG).show();
         }
-        return selectedOutputPath;
+        return outputPath;
     }
 
 
@@ -256,12 +258,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
-        //TODO: Cambiar switch por un if ya que solo se tiene un caso
         switch(item.getItemId()){
             case R.id.acerca_de:
-                //Equipo
                 dialog_menu.show();
-
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
