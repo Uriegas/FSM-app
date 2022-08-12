@@ -1,6 +1,5 @@
 package com.upv.pm_2022.iti_27849_u2_equipo_04;
 
-
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -9,7 +8,6 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 
 import java.util.ArrayList;
-
 
 /**
  * Every type of arrow is associated to at least one node (where the arrow originates)
@@ -90,9 +88,9 @@ public abstract class Link extends Figure {
             path.lineTo((float) x_2, (float) y_2);
             drawArrowHead(canvas, x_2, y_2, Math.atan2(y_2-y_1, x_2-x_1));
             // Draw name
-            textX = (float)(x_1+x_2)/2; textY = (float)(y_1+y_2)/2;
+            this.textX = (float)(x_1+x_2)/2; this.textY = (float)(y_1+y_2)/2;
             double textAngle = Math.atan2(x_2-x_1, y_1-y_2);
-            drawName(canvas, textX, textY, textAngle + this.lineAdjust);
+            drawName(canvas, this.textX, this.textY, textAngle + this.lineAdjust);
         } else { // Draw arched line
             if(x_1 == 0 && y_1 == 0 ) { // Draw arrow head for self link, this would fail if the
                                         // user puts a node in 0,0 which is unlikely but possible
@@ -100,7 +98,6 @@ public abstract class Link extends Figure {
             } else { // Draw arrow head for an arched link
                 drawArrowHead(canvas, x_2, y_2, endAngle - reverseScale * (Math.PI/2));
                 // Draw name
-                double width = this.name.length()*fontSize;
                 if(endAngle < startAngle) endAngle += Math.PI * 2;
                 double textAngle = (startAngle + endAngle) / 2 + (isReversed ? 1 : 0) * Math.PI;
                 double tX = circle.x + circle.r * Math.cos(textAngle);
@@ -108,15 +105,10 @@ public abstract class Link extends Figure {
                 drawName(canvas, tX, tY, textAngle);
             }
             // Convert radian angles to degrees
-            startAngle  = (float) Math.toDegrees(startAngle);
-            endAngle    = (float) Math.toDegrees(endAngle);
+            startAngle  = Math.toDegrees(startAngle);
+            endAngle    = Math.toDegrees(endAngle);
             // Draw arch
-            // TODO: If setting the isReversed flag doesn't get fix, then implement logic to update
-            //  it here; in other words, the curved line is not always well drawn
             drawCurvedLine(path, circle.x, circle.y, circle.r, startAngle, endAngle, isReversed);
-
-//            textX = (float)(x_1+x_2)/2; textY = (float)(y_1+y_2)/2;
-//            double textAngle = Math.atan2(x_2-x_1, y_1-y_2);
         }
         // Draw the whole thing
         canvas.drawPath(path, paint);
@@ -205,29 +197,6 @@ public abstract class Link extends Figure {
     }
 
     /**
-     * Intelligently draw the name of the arrow in an specific position
-     * @param canvas canvas to draw in
-     * @param x_1 x coordinate of the first point
-     * @param y_1 y coordinate of the first point
-     * @param x_2 x coordinate of the second point
-     * @param y_2 y coordinate of the second point
-     */
-    protected void drawName(Canvas canvas, int x_1, int y_1, int x_2, int y_2) {
-        // TODO: Fine tune; probably this doesn't work well because of floats; change float->double
-        double width = this.name.length()*fontSize;
-        textX = (float)(x_1+x_2)/2; textY = (float)(y_1+y_2)/2;
-        double textAngle = Math.atan2(x_2-x_1, y_1-y_2);
-
-        double cos = Math.cos(textAngle), sin = Math.sin(textAngle);
-        double cornerX = (width/2 + 5)*(cos > 0 ? 1 : -1), cornerY = (fontSize)*(sin > 0 ? 1 : -1);
-        double slide = sin * Math.pow(Math.abs(sin), 40) * cornerX - cos *
-                Math.pow(Math.abs(cos), 15) * cornerY;
-        textX += cornerX - sin * slide;
-        textY += cornerY + cos * slide;
-        canvas.drawText(name, textX, textY, paint);
-    }
-
-    /**
      * Draws the name of the current link in the given position
      * @param canvas canvas to draw in
      * @param x x-position to draw in
@@ -235,24 +204,21 @@ public abstract class Link extends Figure {
      * @param angle angle of the current link
      */
     private void drawName(Canvas canvas, double x, double y, double angle) {
-        double width = this.name.length()*fontSize;
-        x -= width/2;
+        double width = this.name.length()*fontSize*0.5;
+        x -= width/4;
 
         if(angle != 0) { // position text if an angle is given
             double cos = Math.cos(angle);
             double sin = Math.sin(angle);
-            double cornerX = (width / 2 + 5) * (cos > 0 ? 1 : -1);
+            double cornerX = (width + 5) * (cos > 0 ? 1 : -1);
             double cornerY = 15 * (sin > 0 ? 1 : -1);
             double slide = sin * Math.pow(Math.abs(sin), 40) * cornerX
                          - cos * Math.pow(Math.abs(cos), 10) * cornerY;
             x += cornerX - sin * slide;
-            y += cornerY - cos * slide;
+            y += cornerY + cos * slide;
         }
-//        else {
-//            // TODO
-//        }
         this.textX = (float)x; this.textY = (float)y;
-        canvas.drawText(this.name, this.textX, this.textY + 6, paint);
+        canvas.drawText(this.name, this.textX, this.textY+12, paint);
     }
 
     /**
