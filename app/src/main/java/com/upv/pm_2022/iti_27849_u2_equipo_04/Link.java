@@ -217,8 +217,8 @@ public abstract class Link extends Figure {
             x += cornerX - sin * slide;
             y += cornerY + cos * slide;
         }
-        this.textX = (float)x; this.textY = (float)y;
-        canvas.drawText(this.name, this.textX, this.textY+12, paint);
+        this.textX = (float)x; this.textY = (float)y + 12;
+        canvas.drawText(this.name, this.textX, this.textY, paint);
     }
 
     /**
@@ -242,27 +242,88 @@ public abstract class Link extends Figure {
         endX = endX*resize_factor;
         endY = endY*resize_factor;
 
-        float x_1, y_1, x_2, y_2;
         float textX = this.textX*resize_factor, textY = this.textY*resize_factor;
         double alpha = Math.atan2(endY-y, endX-x);
-        double dx = Math.cos(alpha);
-        double dy = Math.sin(alpha);
-        x_1 = (float)(endX - 24 * dx * resize_factor + 15 * dy * resize_factor);
-        y_1 = (float)(endY - 24 * dy * resize_factor - 15 * dx * resize_factor);
-        x_2 = (float)(endX - 24 * dx * resize_factor - 15 * dy * resize_factor);
-        y_2 = (float)(endY - 24 * dy * resize_factor + 15 * dx * resize_factor);
 
         String latex_output = "";
         // Draw arrow
         latex_output += DRAW_COMMAND + ' ' + COLOR + " (" + x + ", -" + y + ") --" +
                 " (" + endX + ", -" + endY + ");\n";
         // Draw arrow head (triangle)
-        latex_output += FILL_COMMAND + ' ' + COLOR + " (" + endX + ", -" + endY + ") -- (" +
-                x_1 + ", -" + y_1 + ") -- (" + x_2 + ", -" + y_2 + ");\n";
-        if(!this.name.isEmpty()) // Draw name
+        latex_output += toLatexArrowHead(resize_factor, endX, -endY, alpha);
+        // Draw arrow name
+        if(!this.name.isEmpty())
             latex_output += DRAW_COMMAND + ' ' + COLOR + " (" + textX + ", -" + textY + ") " +
                     "node" + " {$" + this.name + "$};\n";
         return latex_output;
+    }
+
+    /**
+     * Generates Latex code of the current arched line
+     * @param resize_factor refactor size to draw
+     * @param circle circle to be drawn
+     * @param startAngle starting angle to draw from
+     * @param endAngle ending angle to draw to
+     * @param isReversed whether the starting and ending angle should be flipped
+     * @return
+     */
+    protected String toLatexArc(float resize_factor, Node circle, double startAngle,double endAngle,
+                              boolean isReversed, boolean isSelfLink) {
+        String latex_output = "";
+
+        // Draw arched line
+        float x = circle.x * resize_factor;
+        float y = circle.y * resize_factor;
+        float r= circle.r * resize_factor;
+        double angle = isSelfLink ? endAngle : endAngle - (isReversed ? 1 : -1) * (Math.PI/2);
+
+        if(isReversed) { // Apply the isReversed flag (swap angles)
+            double tmp = startAngle; startAngle = endAngle; endAngle = tmp;
+        }
+        if(endAngle < startAngle) endAngle += Math.PI * 2;
+        if(Math.min(startAngle, endAngle) < -2 * Math.PI) {
+            startAngle  += 2 * Math.PI;
+            endAngle    += 2 * Math.PI;
+        } else if(Math.max(startAngle, endAngle) > 2 * Math.PI) {
+            startAngle  -= 2 * Math.PI;
+            endAngle    -= 2 * Math.PI;
+        }
+        startAngle  = -startAngle;
+        endAngle    = -endAngle;
+
+        x = (float) (x + r * Math.cos(startAngle));
+        y = (float) (-y + r * Math.sin(startAngle));
+
+        startAngle  = (startAngle * 180 / Math.PI);
+        endAngle    = (endAngle * 180 / Math.PI);
+
+        latex_output += DRAW_COMMAND + ' ' + COLOR + " (" + x + ", " + y + ") " + "arc (" +
+                        startAngle + ":" + endAngle + ":" + r + ");\n";
+
+        // Draw arrow head
+        latex_output += toLatexArrowHead(resize_factor, x, y, angle );
+//        drawArrowHead(canvas, x_2, y_2, endAngle + Math.PI * 0.4);
+
+        // Draw arrow name
+        float textX = this.textX*resize_factor, textY = this.textY*resize_factor;
+        if(!this.name.isEmpty())
+            latex_output += DRAW_COMMAND + ' ' + COLOR + " (" + textX + ", -" + textY + ") " +
+                    "node" + " {$" + this.name + "$};\n";
+        return latex_output;
+    }
+
+
+    private String toLatexArrowHead(float resize_factor, double x, double y, double alpha) {
+        double dx = Math.cos(alpha);
+        double dy = Math.sin(alpha);
+
+        float x_1 = (float)(x - 24 * dx * resize_factor + 15 * dy * resize_factor);
+        float y_1 = (float)(y + 24 * dy * resize_factor + 15 * dx * resize_factor);
+        float x_2 = (float)(x - 24 * dx * resize_factor - 15 * dy * resize_factor);
+        float y_2 = (float)(y + 24 * dy * resize_factor - 15 * dx * resize_factor);
+
+        return  FILL_COMMAND + ' ' + COLOR + " (" + x + ", " + y + ") -- (" +
+                x_1 + ", " + y_1 + ") -- (" + x_2 + ", " + y_2 + ");\n";
     }
 
     /**

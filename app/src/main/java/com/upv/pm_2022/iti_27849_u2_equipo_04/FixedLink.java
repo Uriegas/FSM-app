@@ -156,7 +156,25 @@ public class FixedLink extends Link {
     @Override
     public String toLatex(float resize_factor) {
         Node from = nodes.get(0); Node to = nodes.get(1);
-        return toLatex(resize_factor, from.x, from.y, to.x, to.y);
+        if(this.perpendicular == 0) {
+            // Get middle point between the 2 nodes
+            int midX = (from.x + to.x)/2;
+            int midY = (from.y + to.y)/2;
+            // Get the 2 nodes representing the closest points
+            Node tmp_1 = from.getClosestPoint(midX, midY);
+            Node tmp_2 = to.getClosestPoint(midX, midY);
+            return toLatex(resize_factor, tmp_1.x, tmp_1.y, tmp_2.x, tmp_2.y);
+        } else {
+            Node anchor = getAnchorPoint();
+            Node circle = circleFromThreePoints(from.x, from.y, to.x, to.y, anchor.x, anchor.y);
+            boolean isReversed = (this.perpendicular > 0);
+            int reverseScale = isReversed ? 1 : -1;
+            float startAngle = (float) Math.atan2(from.y - circle.y, from.x - circle.x)
+                    - reverseScale * from.r / circle.r;
+            float endAngle   = (float) Math.atan2(to.y - circle.y, to.x - circle.x)
+                    + reverseScale * to.r / circle.r;
+            return toLatexArc(resize_factor, circle, startAngle, endAngle, isReversed, false);
+        }
     }
 
     private Node getAnchorPoint() {

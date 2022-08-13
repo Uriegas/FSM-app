@@ -32,8 +32,8 @@ public class SelfLink extends Link {
 
         // Draw arched line, head of the arrow and name
         draw(canvas, 0, 0, x_2, y_2, circle, startAngle, endAngle, 0, false);
-        this.textX = (float) circleX; this.textY = (float) circleY;
-        canvas.drawText(this.name, this.textX, this.textY + 6, this.paint);
+        this.textX = (float) circleX; this.textY = (float) circleY + 6;
+        canvas.drawText(this.name, this.textX, this.textY, this.paint);
     }
 
     @Override
@@ -70,7 +70,22 @@ public class SelfLink extends Link {
 
     @Override
     public String toLatex(float resize_factor) { // TODO: This method
-        Node from = nodes.get(0);
-        return toLatex(resize_factor, from.x, from.y, this.x, this.y);
+        Node node = nodes.get(0);
+
+        //Get center of the circle to draw based on the current circle and draw angle
+        double circleX = node.x + 1.5 * node.r * Math.cos(angle);
+        double circleY = node.y + 1.5 * node.r * Math.sin(angle);
+        double circleR = 0.75 * node.r;
+
+        // Get part of the circle to draw, this depends of the draw angle
+        double startAngle   = angle - Math.PI * 0.8;
+        double endAngle     = angle + Math.PI * 0.8;
+
+        // Get the end points, startX and startY are not needed in the draw() call
+        double x_2 = circleX + circleR * Math.cos(endAngle);
+        double y_2 = circleY + circleR * Math.sin(endAngle);
+
+        Node circle = new Node(Integer.MAX_VALUE, (int) circleX, (int) circleY, (float) circleR);
+        return toLatexArc(resize_factor, circle, startAngle, endAngle, false, true);
     }
 }
